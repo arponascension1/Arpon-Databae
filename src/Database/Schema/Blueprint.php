@@ -298,6 +298,17 @@ class Blueprint
     public function bigIncrements($column)
     {
         return $this->unsignedBigInteger($column, true);
+
+    }
+
+    /**
+     * Create a new "id" column (auto-incrementing big integer primary key).
+     *
+     * @return \Arpon\Database\Schema\ColumnDefinition
+     */
+    public function id($column = 'id')
+    {
+        return $this->bigIncrements($column);
     }
 
     /**
