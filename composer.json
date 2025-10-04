@@ -8,7 +8,7 @@
     "homepage": "https://github.com/arponascension1/Arpon-Databae",
     "authors": [
         {
-            "name": "Arpon",
+            "name": "arponascension1",
             "email": "arponascension20@gmail.com",
             "role": "Developer"
         }
@@ -33,5 +33,10 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "scripts": {
+        "test": "phpunit",
+        "test-mysql": "php mysql_index.php",
+        "test-sqlite": "php sqlite_cascade_test.php"
+    }
 }
