@@ -35,6 +35,25 @@ A powerful, Laravel-inspired database abstraction layer providing advanced schem
 composer require arpon/database
 ```
 
+### Quick Setup
+
+1. **Copy configuration files from examples:**
+   ```bash
+   cp examples/config.example.php config.php
+   cp examples/bootstrap.example.php bootstrap.php
+   ```
+
+2. **Update your database settings** in `config.php`
+
+3. **Initialize the database:**
+   ```php
+   <?php
+   require_once 'bootstrap.php';
+   
+   // Database is now ready to use!
+   $users = table('users')->get();
+   ```
+
 ### Basic Usage
 
 ```php
@@ -67,6 +86,14 @@ $capsule->addConnection([
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 ```
+
+### Examples & Documentation
+
+Complete examples are available in the `examples/` directory:
+- **Configuration**: `examples/config.example.php`
+- **Initialization**: `examples/bootstrap.example.php`  
+- **Basic Usage**: `examples/basic_usage.php`
+- **Advanced Examples**: See `examples/README.md`
 
 ## 📖 Documentation
 
