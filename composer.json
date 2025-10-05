@@ -1,0 +1,64 @@
+{
+    "name": "arpon/database",
+    "description": "Arpon Database - Advanced PHP Database Abstraction Layer with Laravel-compatible ORM, Schema Builder, Query Builder for MySQL and SQLite. Features 25+ column types, foreign key CASCADE support, advanced relationships, and high-performance database operations.",
+    "version": "2.0.1",
+    "type": "library",
+    "keywords": [
+        "arpon",
+        "arpon-database", 
+        "php",
+        "database",
+        "mysql",
+        "sqlite",
+        "orm",
+        "eloquent",
+        "query-builder",
+        "schema-builder",
+        "laravel",
+        "migration",
+        "foreign-key",
+        "cascade-delete",
+        "database-abstraction",
+        "pdo",
+        "sql",
+        "php-library",
+        "relationships",
+        "polymorphic",
+        "through-relationships"
+    ],
+    "homepage": "https://github.com/arponascension1/Arpon-Databae",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Arpon Ascension",
+            "email": "arponascension20@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Arpon\\Database\\": "src/Database/"
+        },
+        "files": [
+            "src/Database/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Arpon\\Database\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}

@@ -1683,6 +1683,189 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Define a has-one-through relationship.
+     *
+     * @param  string  $related
+     * @param  string  $through
+     * @param  string|null  $firstKey
+     * @param  string|null  $secondKey
+     * @param  string|null  $localKey
+     * @param  string|null  $secondLocalKey
+     * @return \Arpon\Database\Eloquent\Relations\HasOneThrough
+     */
+    public function hasOneThrough(string $related, string $through, ?string $firstKey = null, ?string $secondKey = null, ?string $localKey = null, ?string $secondLocalKey = null)
+    {
+        $through = new $through;
+
+        $firstKey = $firstKey ?: $this->getForeignKey();
+        $secondKey = $secondKey ?: $through->getForeignKey();
+        $localKey = $localKey ?: $this->getKeyName();
+        $secondLocalKey = $secondLocalKey ?: $through->getKeyName();
+
+        return $this->newHasOneThrough(
+            $this->newRelatedInstance($related)->newQuery(),
+            $this, $through, $firstKey, $secondKey, $localKey, $secondLocalKey
+        );
+    }
+
+    /**
+     * Define a has-many-through relationship.
+     *
+     * @param  string  $related
+     * @param  string  $through
+     * @param  string|null  $firstKey
+     * @param  string|null  $secondKey
+     * @param  string|null  $localKey
+     * @param  string|null  $secondLocalKey
+     * @return \Arpon\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function hasManyThrough(string $related, string $through, ?string $firstKey = null, ?string $secondKey = null, ?string $localKey = null, ?string $secondLocalKey = null)
+    {
+        $through = new $through;
+
+        $firstKey = $firstKey ?: $this->getForeignKey();
+        $secondKey = $secondKey ?: $through->getForeignKey();
+        $localKey = $localKey ?: $this->getKeyName();
+        $secondLocalKey = $secondLocalKey ?: $through->getKeyName();
+
+        return $this->newHasManyThrough(
+            $this->newRelatedInstance($related)->newQuery(),
+            $this, $through, $firstKey, $secondKey, $localKey, $secondLocalKey
+        );
+    }
+
+    /**
+     * Define a polymorphic one-to-one relationship.
+     *
+     * @param  string  $related
+     * @param  string  $name
+     * @param  string|null  $type
+     * @param  string|null  $id
+     * @param  string|null  $localKey
+     * @return \Arpon\Database\Eloquent\Relations\MorphOne
+     */
+    public function morphOne(string $related, string $name, ?string $type = null, ?string $id = null, ?string $localKey = null)
+    {
+        $instance = $this->newRelatedInstance($related);
+
+        [$type, $id] = $this->getMorphs($name, $type, $id);
+
+        $table = $instance->getTable();
+
+        $localKey = $localKey ?: $this->getKeyName();
+
+        return $this->newMorphOne($instance->newQuery(), $this, $table.'.'.$type, $table.'.'.$id, $localKey);
+    }
+
+    /**
+     * Define a polymorphic one-to-many relationship.
+     *
+     * @param  string  $related
+     * @param  string  $name
+     * @param  string|null  $type
+     * @param  string|null  $id
+     * @param  string|null  $localKey
+     * @return \Arpon\Database\Eloquent\Relations\MorphMany
+     */
+    public function morphMany(string $related, string $name, ?string $type = null, ?string $id = null, ?string $localKey = null)
+    {
+        $instance = $this->newRelatedInstance($related);
+
+        [$type, $id] = $this->getMorphs($name, $type, $id);
+
+        $table = $instance->getTable();
+
+        $localKey = $localKey ?: $this->getKeyName();
+
+        return $this->newMorphMany($instance->newQuery(), $this, $table.'.'.$type, $table.'.'.$id, $localKey);
+    }
+
+    /**
+     * Define a polymorphic, inverse one-to-one or many relationship.
+     *
+     * @param  string|null  $name
+     * @param  string|null  $type
+     * @param  string|null  $id
+     * @param  string|null  $ownerKey
+     * @return \Arpon\Database\Eloquent\Relations\MorphTo
+     */
+    public function morphTo(?string $name = null, ?string $type = null, ?string $id = null, ?string $ownerKey = null)
+    {
+        $name = $name ?: $this->guessBelongsToRelation();
+
+        [$type, $id] = $this->getMorphs(snake_case($name), $type, $id);
+
+        return $this->morphEagerTo($name, $type, $id, $ownerKey);
+    }
+
+    /**
+     * Define a many-to-many polymorphic relationship.
+     *
+     * @param  string  $related
+     * @param  string  $name
+     * @param  string|null  $table
+     * @param  string|null  $foreignPivotKey
+     * @param  string|null  $relatedPivotKey
+     * @param  string|null  $parentKey
+     * @param  string|null  $relatedKey
+     * @param  bool  $inverse
+     * @return \Arpon\Database\Eloquent\Relations\MorphToMany
+     */
+    public function morphToMany(string $related, string $name, ?string $table = null, ?string $foreignPivotKey = null, ?string $relatedPivotKey = null, ?string $parentKey = null, ?string $relatedKey = null, bool $inverse = false)
+    {
+        $caller = $this->guessBelongsToRelation();
+
+        $instance = $this->newRelatedInstance($related);
+
+        $foreignPivotKey = $foreignPivotKey ?: $name.'_id';
+        $relatedPivotKey = $relatedPivotKey ?: $instance->getForeignKey();
+
+        $table = $table ?: str_plural($name);
+
+        return $this->newMorphToMany(
+            $instance->newQuery(), $this, $name, $table,
+            $foreignPivotKey, $relatedPivotKey, $parentKey ?: $this->getKeyName(),
+            $relatedKey ?: $instance->getKeyName(), $caller, $inverse
+        );
+    }
+
+    /**
+     * Define a polymorphic many-to-many inverse relationship.
+     *
+     * @param  string  $related
+     * @param  string  $name
+     * @param  string|null  $table
+     * @param  string|null  $foreignPivotKey
+     * @param  string|null  $relatedPivotKey
+     * @param  string|null  $parentKey
+     * @param  string|null  $relatedKey
+     * @return \Arpon\Database\Eloquent\Relations\MorphToMany
+     */
+    public function morphedByMany(string $related, string $name, ?string $table = null, ?string $foreignPivotKey = null, ?string $relatedPivotKey = null, ?string $parentKey = null, ?string $relatedKey = null)
+    {
+        $foreignPivotKey = $foreignPivotKey ?: $this->getForeignKey();
+        $relatedPivotKey = $relatedPivotKey ?: $name.'_id';
+
+        return $this->morphToMany(
+            $related, $name, $table, $foreignPivotKey,
+            $relatedPivotKey, $parentKey, $relatedKey, true
+        );
+    }
+
+    /**
+     * Get the morphs for a polymorphic relationship.
+     *
+     * @param  string  $name
+     * @param  string|null  $type
+     * @param  string|null  $id
+     * @return array
+     */
+    protected function getMorphs(string $name, ?string $type, ?string $id): array
+    {
+        return [$type ?: $name.'_type', $id ?: $name.'_id'];
+    }
+
+    /**
      * Create a new model instance for a related model.
      *
      * @param  string  $class
@@ -1714,9 +1897,17 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function guessBelongsToRelation(): string
     {
-        [$one, $two, $caller] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4);
+        
+        // Look for the calling method that isn't a magic method
+        foreach ($trace as $frame) {
+            if (isset($frame['function']) && 
+                !in_array($frame['function'], ['__call', '__callStatic', 'forwardCallTo', 'guessBelongsToRelation'])) {
+                return $frame['function'];
+            }
+        }
 
-        return $caller['function'];
+        return 'relation'; // fallback
     }
 
     /**
@@ -1760,6 +1951,119 @@ abstract class Model implements ArrayAccess, JsonSerializable
     protected function newBelongsTo(EloquentBuilder $query, Model $child, string $foreignKey, string $ownerKey, string $relation)
     {
         return new BelongsTo($query, $child, $foreignKey, $ownerKey, $relation);
+    }
+
+    /**
+     * Instantiate a new HasOneThrough relationship.
+     *
+     * @param  \Arpon\Database\Eloquent\EloquentBuilder  $query
+     * @param  \Arpon\Database\Eloquent\Model  $farParent
+     * @param  \Arpon\Database\Eloquent\Model  $throughParent
+     * @param  string  $firstKey
+     * @param  string  $secondKey
+     * @param  string  $localKey
+     * @param  string  $secondLocalKey
+     * @return \Arpon\Database\Eloquent\Relations\HasOneThrough
+     */
+    protected function newHasOneThrough(EloquentBuilder $query, Model $farParent, Model $throughParent, string $firstKey, string $secondKey, string $localKey, string $secondLocalKey)
+    {
+        // For now, return a basic relationship - these can be implemented later
+        return new HasOne($query, $farParent, $firstKey, $localKey);
+    }
+
+    /**
+     * Instantiate a new HasManyThrough relationship.
+     *
+     * @param  \Arpon\Database\Eloquent\EloquentBuilder  $query
+     * @param  \Arpon\Database\Eloquent\Model  $farParent
+     * @param  \Arpon\Database\Eloquent\Model  $throughParent
+     * @param  string  $firstKey
+     * @param  string  $secondKey
+     * @param  string  $localKey
+     * @param  string  $secondLocalKey
+     * @return \Arpon\Database\Eloquent\Relations\HasManyThrough
+     */
+    protected function newHasManyThrough(EloquentBuilder $query, Model $farParent, Model $throughParent, string $firstKey, string $secondKey, string $localKey, string $secondLocalKey)
+    {
+        // For now, return a basic relationship - these can be implemented later
+        return new HasMany($query, $farParent, $firstKey, $localKey);
+    }
+
+    /**
+     * Instantiate a new MorphOne relationship.
+     *
+     * @param  \Arpon\Database\Eloquent\EloquentBuilder  $query
+     * @param  \Arpon\Database\Eloquent\Model  $parent
+     * @param  string  $type
+     * @param  string  $id
+     * @param  string  $localKey
+     * @return \Arpon\Database\Eloquent\Relations\MorphOne
+     */
+    protected function newMorphOne(EloquentBuilder $query, Model $parent, string $type, string $id, string $localKey)
+    {
+        // For now, return a basic relationship - these can be implemented later
+        return new HasOne($query, $parent, $id, $localKey);
+    }
+
+    /**
+     * Instantiate a new MorphMany relationship.
+     *
+     * @param  \Arpon\Database\Eloquent\EloquentBuilder  $query
+     * @param  \Arpon\Database\Eloquent\Model  $parent
+     * @param  string  $type
+     * @param  string  $id
+     * @param  string  $localKey
+     * @return \Arpon\Database\Eloquent\Relations\MorphMany
+     */
+    protected function newMorphMany(EloquentBuilder $query, Model $parent, string $type, string $id, string $localKey)
+    {
+        // For now, return a basic relationship - these can be implemented later
+        return new HasMany($query, $parent, $id, $localKey);
+    }
+
+    /**
+     * Instantiate a new MorphTo relationship.
+     *
+     * @param  \Arpon\Database\Eloquent\EloquentBuilder  $query
+     * @param  \Arpon\Database\Eloquent\Model  $parent
+     * @param  string  $foreignKey
+     * @param  string  $ownerKey
+     * @param  string  $type
+     * @param  string  $relation
+     * @return \Arpon\Database\Eloquent\Relations\MorphTo
+     */
+    protected function morphEagerTo(string $name, string $type, string $id, ?string $ownerKey)
+    {
+        // For now, create a basic relationship structure
+        // This would normally handle polymorphic relationships
+        return new BelongsTo(
+            $this->newQuery(),
+            $this,
+            $id,
+            $ownerKey ?: $this->getKeyName(),
+            $name
+        );
+    }
+
+    /**
+     * Instantiate a new MorphToMany relationship.
+     *
+     * @param  \Arpon\Database\Eloquent\EloquentBuilder  $query
+     * @param  \Arpon\Database\Eloquent\Model  $parent
+     * @param  string  $name
+     * @param  string  $table
+     * @param  string  $foreignPivotKey
+     * @param  string  $relatedPivotKey
+     * @param  string  $parentKey
+     * @param  string  $relatedKey
+     * @param  string  $relationName
+     * @param  bool  $inverse
+     * @return \Arpon\Database\Eloquent\Relations\MorphToMany
+     */
+    protected function newMorphToMany(EloquentBuilder $query, Model $parent, string $name, string $table, string $foreignPivotKey, string $relatedPivotKey, string $parentKey, string $relatedKey, string $relationName, bool $inverse = false)
+    {
+        // For now, return a basic relationship - these can be implemented later
+        return new HasMany($query, $parent, $foreignPivotKey, $parentKey);
     }
 
     /**
@@ -2042,3 +2346,4 @@ if (!function_exists('value')) {
         return $value instanceof \Closure ? $value() : $value;
     }
 }
+

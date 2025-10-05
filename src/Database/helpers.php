@@ -169,3 +169,15 @@ if (! function_exists('last')) {
         return end($array);
     }
 }
+
+if (! function_exists('str_plural')) {
+    function str_plural(string $value): string {
+        // Simple pluralization - add 's' if doesn't end with 's', 'x', 'z', 'ch', 'sh'
+        if (preg_match('/[sxz]$|[^aeioudgkprt]h$/', $value)) {
+            return $value . 'es';
+        } elseif (preg_match('/[^aeiou]y$/', $value)) {
+            return substr($value, 0, -1) . 'ies';
+        }
+        return $value . 's';
+    }
+}
