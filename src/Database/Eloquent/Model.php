@@ -983,37 +983,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
         return (new static)->newQuery();
     }
 
-    /**
-     * Get all of the models from the database.
-     */
-    public static function all(array $columns = ['*']): Collection
-    {
-        return static::query()->get($columns);
-    }
 
-    /**
-     * Save a new model and return the instance.
-     */
-    public static function create(array $attributes = []): static
-    {
-        return static::query()->create($attributes);
-    }
-
-    /**
-     * Find a model by its primary key.
-     */
-    public static function find($id, array $columns = ['*'])
-    {
-        return static::query()->find($id, $columns);
-    }
-
-    /**
-     * Add a basic where clause to the query.
-     */
-    public static function where($column, $operator = null, $value = null, string $boolean = 'and'): EloquentBuilder
-    {
-        return static::query()->where($column, $operator, $value, $boolean);
-    }
 
     /**
      * Get the first record matching the attributes or create it.
@@ -1025,6 +995,62 @@ abstract class Model implements ArrayAccess, JsonSerializable
         }
 
         return static::create(array_merge($attributes, $values));
+    }
+
+    /**
+     * Handle dynamic static method calls into the method.
+     *
+     * @param  string  $method
+     * @param  array  $parameters
+     * @return mixed
+     */
+    public static function __callStatic($method, $parameters)
+    {
+        return (new static)->newQuery()->$method(...$parameters);
+    }
+
+    /**
+     * Handle dynamic method calls into the model.
+     *
+     * @param  string  $method
+     * @param  array  $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        return $this->forwardCallTo($this->newQuery(), $method, $parameters);
+    }
+
+    /**
+     * Forward a method call to the given object.
+     *
+     * @param  mixed  $object
+     * @param  string  $method
+     * @param  array  $parameters
+     * @return mixed
+     *
+     * @throws \BadMethodCallException
+     */
+    protected function forwardCallTo($object, $method, $parameters)
+    {
+        try {
+            return $object->{$method}(...$parameters);
+        } catch (\Error|\BadMethodCallException $e) {
+            $pattern = '~^Call to undefined method (?P<class>[^:]+)::(?P<method>[^\(]+)\(\)$~';
+
+            if (! preg_match($pattern, $e->getMessage(), $matches)) {
+                throw $e;
+            }
+
+            if ($matches['class'] != get_class($object) ||
+                $matches['method'] != $method) {
+                throw $e;
+            }
+
+            throw new \BadMethodCallException(sprintf(
+                'Call to undefined method %s::%s()', static::class, $method
+            ));
+        }
     }
 
     /**
@@ -1934,26 +1960,6 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function isClean($attributes = null): bool
     {
         return ! $this->isDirty(...func_get_args());
-    }
-
-    /**
-     * Handle dynamic static method calls into the method.
-     */
-    public static function __callStatic(string $method, array $parameters)
-    {
-        return (new static)->$method(...$parameters);
-    }
-
-    /**
-     * Handle dynamic method calls into the model.
-     */
-    public function __call(string $method, array $parameters)
-    {
-        if (in_array($method, ['increment', 'decrement'])) {
-            return $this->$method(...$parameters);
-        }
-
-        return $this->newQuery()->$method(...$parameters);
     }
 
 }

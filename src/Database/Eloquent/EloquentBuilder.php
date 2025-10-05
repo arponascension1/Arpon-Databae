@@ -308,6 +308,14 @@ class EloquentBuilder
     }
 
     /**
+     * Get all of the models from the database.
+     */
+    public function all(array $columns = ['*']): Collection
+    {
+        return $this->get($columns);
+    }
+
+    /**
      * Paginate the given query.
      */
     public function paginate(int $perPage = 15, array $columns = ['*'], string $pageName = 'page', ?int $page = null): array
