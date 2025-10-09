@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2025-10-09
+
+### Fixed
+- **BelongsTo Relationship Bug Fixes**
+  - Fixed `guessBelongsToRelation()` method to properly detect relationship names from debug backtrace
+  - Enhanced foreign key auto-detection to exclude internal methods
+  - Resolved issue where BelongsTo relationships were using incorrect foreign key names
+  - Improved relationship method name detection for automatic foreign key generation
+  - Added comprehensive test suite for BelongsTo relationships validation
+
+### Enhanced
+- **Relationship Testing**
+  - Added extensive BelongsTo relationship test coverage
+  - Tests for eager loading, association, dissociation, and null handling
+  - Validation of automatic foreign key detection functionality
+
 ## [2.1.0] - 2025-10-09
 
 ### Added
