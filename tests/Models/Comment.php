@@ -11,9 +11,9 @@ class Comment extends Model
 {
     
     protected array $fillable = [
-        'post_id',
         'content',
-        'author_name'
+        'commentable_id',
+        'commentable_type'
     ];
 
     protected array $dates = ['created_at', 'updated_at'];

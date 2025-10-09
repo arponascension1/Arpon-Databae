@@ -10,6 +10,13 @@ use Arpon\Database\Support\Collection as BaseCollection;
 use Arpon\Database\Eloquent\Relations\HasOne;
 use Arpon\Database\Eloquent\Relations\HasMany;
 use Arpon\Database\Eloquent\Relations\BelongsTo;
+use Arpon\Database\Eloquent\Relations\HasOneThrough;
+use Arpon\Database\Eloquent\Relations\HasManyThrough;
+use Arpon\Database\Eloquent\Relations\MorphOne;
+use Arpon\Database\Eloquent\Relations\MorphMany;
+use Arpon\Database\Eloquent\Relations\MorphTo;
+use Arpon\Database\Eloquent\Relations\MorphToMany;
+use Arpon\Database\Eloquent\Relations\BelongsToMany;
 use Arpon\Database\Eloquent\EloquentBuilder;
 use ArrayAccess;
 use JsonSerializable;
@@ -129,6 +136,11 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * The database manager instance.
      */
     protected static ?DatabaseManager $resolver = null;
+
+    /**
+     * The morph map for polymorphic relations.
+     */
+    protected static array $morphMap = [];
 
     /**
      * Create a new Eloquent model instance.
@@ -394,6 +406,21 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Get the qualified column name for the model.
+     *
+     * @param  string  $column
+     * @return string
+     */
+    public function qualifyColumn(string $column): string
+    {
+        if (str_contains($column, '.')) {
+            return $column;
+        }
+
+        return $this->getTable() . '.' . $column;
+    }
+
+    /**
      * Generate the table name from the model class name.
      */
     protected function generateTableName(): string
@@ -499,6 +526,33 @@ abstract class Model implements ArrayAccess, JsonSerializable
     public function getKeyType(): string
     {
         return $this->keyType;
+    }
+
+    /**
+     * Get the class name for polymorphic relations.
+     *
+     * @return string
+     */
+    public function getMorphClass()
+    {
+        $morphMap = static::$morphMap ?? [];
+
+        if (! empty($morphMap) && in_array(static::class, $morphMap)) {
+            return array_search(static::class, $morphMap, true);
+        }
+
+        return static::class;
+    }
+
+    /**
+     * Get the actual class name for a given morph alias.
+     *
+     * @param  string  $alias
+     * @return string
+     */
+    public static function getActualClassNameForMorph($alias)
+    {
+        return static::$morphMap[$alias] ?? $alias;
     }
 
     /**
@@ -1967,8 +2021,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function newHasOneThrough(EloquentBuilder $query, Model $farParent, Model $throughParent, string $firstKey, string $secondKey, string $localKey, string $secondLocalKey)
     {
-        // For now, return a basic relationship - these can be implemented later
-        return new HasOne($query, $farParent, $firstKey, $localKey);
+        return new HasOneThrough($query, $farParent, $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey);
     }
 
     /**
@@ -1985,8 +2038,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function newHasManyThrough(EloquentBuilder $query, Model $farParent, Model $throughParent, string $firstKey, string $secondKey, string $localKey, string $secondLocalKey)
     {
-        // For now, return a basic relationship - these can be implemented later
-        return new HasMany($query, $farParent, $firstKey, $localKey);
+        return new HasManyThrough($query, $farParent, $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey);
     }
 
     /**
@@ -2001,8 +2053,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function newMorphOne(EloquentBuilder $query, Model $parent, string $type, string $id, string $localKey)
     {
-        // For now, return a basic relationship - these can be implemented later
-        return new HasOne($query, $parent, $id, $localKey);
+        return new MorphOne($query, $parent, $type, $id, $localKey);
     }
 
     /**
@@ -2017,30 +2068,26 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function newMorphMany(EloquentBuilder $query, Model $parent, string $type, string $id, string $localKey)
     {
-        // For now, return a basic relationship - these can be implemented later
-        return new HasMany($query, $parent, $id, $localKey);
+        return new MorphMany($query, $parent, $type, $id, $localKey);
     }
 
     /**
      * Instantiate a new MorphTo relationship.
      *
-     * @param  \Arpon\Database\Eloquent\EloquentBuilder  $query
-     * @param  \Arpon\Database\Eloquent\Model  $parent
-     * @param  string  $foreignKey
-     * @param  string  $ownerKey
+     * @param  string  $name
      * @param  string  $type
-     * @param  string  $relation
+     * @param  string  $id
+     * @param  string|null  $ownerKey
      * @return \Arpon\Database\Eloquent\Relations\MorphTo
      */
     protected function morphEagerTo(string $name, string $type, string $id, ?string $ownerKey)
     {
-        // For now, create a basic relationship structure
-        // This would normally handle polymorphic relationships
-        return new BelongsTo(
+        return new MorphTo(
             $this->newQuery(),
             $this,
             $id,
             $ownerKey ?: $this->getKeyName(),
+            $type,
             $name
         );
     }
@@ -2062,8 +2109,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function newMorphToMany(EloquentBuilder $query, Model $parent, string $name, string $table, string $foreignPivotKey, string $relatedPivotKey, string $parentKey, string $relatedKey, string $relationName, bool $inverse = false)
     {
-        // For now, return a basic relationship - these can be implemented later
-        return new HasMany($query, $parent, $foreignPivotKey, $parentKey);
+        return new MorphToMany($query, $parent, $name, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName, $inverse);
     }
 
     /**

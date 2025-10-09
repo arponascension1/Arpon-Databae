@@ -12,7 +12,7 @@ class Profile extends Model
    
     
     protected array $fillable = [
-        'user_id',
+        'post_id',
         'bio',
         'website'
     ];
@@ -20,10 +20,18 @@ class Profile extends Model
     protected array $dates = ['created_at', 'updated_at'];
 
     /**
-     * Profile belongs to a user
+     * Profile belongs to a post
+     */
+    public function post()
+    {
+        return $this->belongsTo(Post::class);
+    }
+
+    /**
+     * Profile belongs to a user through post
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasOneThrough(User::class, Post::class, 'id', 'id', 'post_id', 'user_id');
     }
 }
