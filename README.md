@@ -1,6 +1,6 @@
 # Arpon Database - Advanced PHP Database Abstraction Layer
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/arponascension1/Arpon-Databae)
+[![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)](https://github.com/arponascension1/Arpon-Databae)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PHP](https://img.shields.io/badge/php-%5E7.4%7C%5E8.0-blue.svg)](https://php.net)
 
@@ -22,10 +22,18 @@ A powerful, Laravel-inspired database abstraction layer providing advanced schem
 - **Raw Queries**: Execute custom SQL with parameter binding
 - **Transactions**: Full ACID transaction support with rollback capabilities
 
+### 🔗 Advanced Relationship System (NEW in 2.1.0)
+- **Complete Relationship Coverage**: 11 relationship types including through and polymorphic relationships
+- **Through Relationships**: hasOneThrough(), hasManyThrough() for distant model access
+- **Polymorphic Relationships**: morphOne(), morphMany(), morphTo() for flexible associations
+- **Many-to-Many Polymorphic**: morphToMany(), morphedByMany() for complex relationships
+- **Optimized SQL Generation**: Efficient joins and queries with proper column qualification
+- **Laravel Eloquent Compatible**: Seamless migration from Laravel applications
+
 ### 🎯 Laravel-Compatible API
 - **Familiar Syntax**: Drop-in replacement for Laravel's database components
 - **Migration-Style**: Use the same Blueprint patterns you're already familiar with
-- **Eloquent-Ready**: Foundation for building ORM relationships and models
+- **Enhanced ORM**: Full Eloquent-style relationships with advanced features
 
 ## 🚀 Quick Start
 
@@ -167,6 +175,82 @@ $schema->create('advanced_table', function ($table) {
     $table->nullableMorphs('commentable');      // Nullable polymorphic relation
     $table->rememberToken();                    // Remember token for authentication
 });
+```
+
+### 🔗 Eloquent Relationships (NEW in 2.1.0)
+
+#### Defining Models with Relationships
+
+```php
+use Arpon\Database\Eloquent\Model;
+
+class User extends Model
+{
+    protected array $fillable = ['name', 'email'];
+    
+    // One-to-many relationship
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+    
+    // One-to-one relationship  
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+    
+    // Through relationship - user's comments through posts
+    public function comments()
+    {
+        return $this->hasManyThrough(Comment::class, Post::class);
+    }
+    
+    // Polymorphic relationship
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
+}
+
+class Post extends Model
+{
+    protected array $fillable = ['title', 'content', 'user_id'];
+    
+    // Inverse relationship
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
+    // Polymorphic many-to-many
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+}
+```
+
+#### Using Relationships
+
+```php
+// Eager loading relationships
+$users = User::with('posts', 'profile')->get();
+
+// Access through relationships
+$user = User::find(1);
+$userPosts = $user->posts; // Collection of posts
+$userProfile = $user->profile; // Single profile
+
+// Through relationships
+$userComments = $user->comments(); // All comments through posts
+
+// Polymorphic relationships  
+$post = Post::find(1);
+$postTags = $post->tags; // Tags associated with this post
+
+// Dynamic queries on relationships
+$activeUserPosts = $user->posts()->where('status', 'published')->get();
 ```
 
 ### Query Building
@@ -355,7 +439,20 @@ php cascade_test.php      # Cross-database CASCADE test
 
 ## 🔄 Version History
 
-### Version 2.0.0 (Current)
+### Version 2.1.0 (Current)
+- ✅ **Complete Relationship System**: 11 relationship types (hasOne, hasMany, belongsTo, hasOneThrough, hasManyThrough, morphOne, morphMany, morphTo, morphToMany, morphedByMany, belongsToMany)
+- ✅ **Through Relationships**: Access distant models through intermediate relationships
+- ✅ **Polymorphic Relationships**: One model can belong to multiple other model types
+- ✅ **Advanced ORM**: Full Laravel Eloquent compatibility with optimized SQL generation
+- ✅ **Enhanced Model Features**: qualifyColumn(), getMorphClass(), morphMap support
+- ✅ **Production Ready**: Comprehensive test coverage and performance optimizations
+
+### Version 2.0.1
+- ✅ **Basic Relationship Methods**: Foundation relationship structure
+- ✅ **Enhanced __callStatic()**: Dynamic method delegation to query builder
+- ✅ **Helper Functions**: str_plural() and improved utility functions
+
+### Version 2.0.0
 - ✅ **Enhanced Schema Builder**: 25+ advanced column types
 - ✅ **Foreign Key CASCADE**: Full ON DELETE/UPDATE support
 - ✅ **Cross-Database Compatibility**: MySQL and SQLite feature parity
