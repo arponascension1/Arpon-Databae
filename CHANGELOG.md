@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2025-10-09
+
+### Added
+- **Complete Advanced Relationship System**
+  - `hasOneThrough()` - Define has-one-through relationships with optimized SQL joins
+  - `hasManyThrough()` - Define has-many-through relationships with proper table linking
+  - `morphOne()` - Define polymorphic one-to-one relationships
+  - `morphMany()` - Define polymorphic one-to-many relationships
+  - `morphTo()` - Define polymorphic inverse relationships with type detection
+  - `morphToMany()` - Define many-to-many polymorphic relationships
+  - `morphedByMany()` - Define polymorphic many-to-many inverse relationships
+  - `BelongsToMany` - Foundation for many-to-many relationships
+  - Enhanced `Pivot` model with proper method signatures and type safety
+
+### Enhanced
+- **Model Class Improvements**
+  - Added `qualifyColumn()` method for proper SQL column qualification
+  - Enhanced `getMorphClass()` method for polymorphic type resolution
+  - Added `morphMap` support for custom polymorphic type mapping
+  - Fixed relationship instantiation methods for all relationship types
+  - Improved `guessBelongsToRelation()` method with better detection logic
+
+### Fixed
+- **SQL Generation Optimization**
+  - Fixed `performJoin()` methods in through relationships for correct table joins
+  - Enhanced method signature compatibility across inheritance chain
+  - Proper return types for all relationship methods
+  - Optimized query generation with correct column qualification
+
+### Technical Details
+- All 11 relationship types fully functional and tested
+- Complete Laravel Eloquent API compatibility maintained
+- Enhanced test coverage with comprehensive relationship scenarios
+- Production-ready performance optimizations
+
 ## [2.0.1] - 2025-10-05
 
 ### Added
