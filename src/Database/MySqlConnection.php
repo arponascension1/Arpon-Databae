@@ -12,9 +12,9 @@ class MySqlConnection extends Connection
     /**
      * Get the default query grammar instance.
      *
-     * @return \Arpon\Database\Query\Grammars\MySqlGrammar
+     * @return Grammar
      */
-    protected function getDefaultQueryGrammar()
+    protected function getDefaultQueryGrammar(): Grammar
     {
         return $this->withTablePrefix(new QueryGrammar);
     }
@@ -22,9 +22,9 @@ class MySqlConnection extends Connection
     /**
      * Get a schema builder instance for the connection.
      *
-     * @return \Arpon\Database\Schema\Builder
+     * @return Builder
      */
-    public function getSchemaBuilder()
+    public function getSchemaBuilder(): Builder
     {
         if (is_null($this->schemaGrammar)) {
             $this->useDefaultSchemaGrammar();
@@ -36,9 +36,9 @@ class MySqlConnection extends Connection
     /**
      * Get the default schema grammar instance.
      *
-     * @return \Arpon\Database\Schema\Grammars\MySqlGrammar
+     * @return Grammar
      */
-    protected function getDefaultSchemaGrammar()
+    protected function getDefaultSchemaGrammar(): Grammar
     {
         return $this->withTablePrefix(new SchemaGrammar);
     }
@@ -46,9 +46,9 @@ class MySqlConnection extends Connection
     /**
      * Get the default post processor instance.
      *
-     * @return \Arpon\Database\Query\Processors\MySqlProcessor
+     * @return QueryProcessor
      */
-    protected function getDefaultPostProcessor()
+    protected function getDefaultPostProcessor(): QueryProcessor
     {
         return new QueryProcessor;
     }
@@ -56,7 +56,7 @@ class MySqlConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return \Doctrine\DBAL\Driver\PDOMySql\Driver
+     * @return DoctrineDriver
      */
     protected function getDoctrineDriver()
     {

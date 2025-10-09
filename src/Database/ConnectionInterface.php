@@ -2,6 +2,8 @@
 
 namespace Arpon\Database;
 
+use Arpon\Database\Query\Builder;
+use Arpon\Database\Query\Expression;
 use Closure;
 
 interface ConnectionInterface
@@ -9,47 +11,47 @@ interface ConnectionInterface
     /**
      * Begin a fluent query against a database table.
      *
-     * @param  string  $table
-     * @return \Arpon\Database\Query\Builder
+     * @param string $table
+     * @return Builder
      */
-    public function table($table);
+    public function table(string $table): Builder;
 
     /**
      * Get a new raw query expression.
      *
      * @param  mixed  $value
-     * @return \Arpon\Database\Query\Expression
+     * @return Expression
      */
-    public function raw($value);
+    public function raw($value): Expression;
 
     /**
      * Run a select statement and return a single result.
      *
-     * @param  string  $query
-     * @param  array  $bindings
-     * @param  bool  $useReadPdo
+     * @param string $query
+     * @param array $bindings
+     * @param bool $useReadPdo
      * @return mixed
      */
-    public function selectOne($query, $bindings = [], $useReadPdo = true);
+    public function selectOne(string $query, array $bindings = [], bool $useReadPdo = true);
 
     /**
      * Run a select statement against the database.
      *
-     * @param  string  $query
-     * @param  array  $bindings
-     * @param  bool  $useReadPdo
+     * @param string $query
+     * @param array $bindings
+     * @param bool $useReadPdo
      * @return array
      */
-    public function select($query, $bindings = [], $useReadPdo = true);
+    public function select(string $query, array $bindings = [], bool $useReadPdo = true): array;
 
     /**
      * Run an insert statement against the database.
      *
-     * @param  string  $query
-     * @param  array  $bindings
+     * @param string $query
+     * @param array $bindings
      * @return bool
      */
-    public function insert($query, $bindings = []);
+    public function insert(string $query, array $bindings = []): bool;
 
     /**
      * Run an update statement against the database.

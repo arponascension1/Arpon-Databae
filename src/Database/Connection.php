@@ -276,10 +276,10 @@ class Connection implements ConnectionInterface
     /**
      * Begin a fluent query against a database table.
      *
-     * @param  string  $table
+     * @param string $table
      * @return \Arpon\Database\Query\Builder
      */
-    public function table($table)
+    public function table(string $table): QueryBuilder
     {
         return $this->query()->from($table);
     }
@@ -302,7 +302,7 @@ class Connection implements ConnectionInterface
      * @param  mixed  $value
      * @return \Arpon\Database\Query\Expression
      */
-    public function raw($value)
+    public function raw($value): Expression
     {
         return new Expression($value);
     }
@@ -310,12 +310,12 @@ class Connection implements ConnectionInterface
     /**
      * Run a select statement and return a single result.
      *
-     * @param  string  $query
-     * @param  array  $bindings
-     * @param  bool  $useReadPdo
+     * @param string $query
+     * @param array $bindings
+     * @param bool $useReadPdo
      * @return mixed
      */
-    public function selectOne($query, $bindings = [], $useReadPdo = true)
+    public function selectOne(string $query, array $bindings = [], bool $useReadPdo = true)
     {
         $records = $this->select($query, $bindings, $useReadPdo);
 
@@ -325,12 +325,12 @@ class Connection implements ConnectionInterface
     /**
      * Run a select statement against the database.
      *
-     * @param  string  $query
-     * @param  array  $bindings
-     * @param  bool  $useReadPdo
+     * @param string $query
+     * @param array $bindings
+     * @param bool $useReadPdo
      * @return array
      */
-    public function select($query, $bindings = [], $useReadPdo = true)
+    public function select(string $query, array $bindings = [], bool $useReadPdo = true): array
     {
         return $this->run($query, $bindings, function ($query, $bindings) use ($useReadPdo) {
             if ($this->pretending()) {
@@ -354,11 +354,11 @@ class Connection implements ConnectionInterface
     /**
      * Run an insert statement against the database.
      *
-     * @param  string  $query
-     * @param  array  $bindings
+     * @param string $query
+     * @param array $bindings
      * @return bool
      */
-    public function insert($query, $bindings = [])
+    public function insert(string $query, array $bindings = []): bool
     {
         return $this->statement($query, $bindings);
     }

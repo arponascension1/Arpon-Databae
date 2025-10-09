@@ -1951,12 +1951,30 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function guessBelongsToRelation(): string
     {
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4);
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         
-        // Look for the calling method that isn't a magic method
+        // Look for the calling method that isn't a magic method or this method
         foreach ($trace as $frame) {
             if (isset($frame['function']) && 
-                !in_array($frame['function'], ['__call', '__callStatic', 'forwardCallTo', 'guessBelongsToRelation'])) {
+                isset($frame['class']) &&
+                $frame['class'] !== __CLASS__ &&
+                !in_array($frame['function'], [
+                    '__call', '__callStatic', 'forwardCallTo', 
+                    'guessBelongsToRelation', 'belongsTo', 'getAttribute', 
+                    'getRelationshipFromMethod', '__get'
+                ])) {
+                return $frame['function'];
+            }
+        }
+
+        // If we can't find a good method name, look for any method that's not internal
+        foreach ($trace as $frame) {
+            if (isset($frame['function']) && 
+                !str_starts_with($frame['function'], '__') &&
+                !in_array($frame['function'], [
+                    'guessBelongsToRelation', 'belongsTo', 'getAttribute', 
+                    'getRelationshipFromMethod', 'getAttributeValue'
+                ])) {
                 return $frame['function'];
             }
         }

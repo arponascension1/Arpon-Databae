@@ -2,39 +2,41 @@
 
 namespace Arpon\Database\Capsule;
 
+use Arpon\Database\ConnectionInterface;
 use Arpon\Database\DatabaseManager;
 use Arpon\Database\Connectors\ConnectionFactory;
 use Arpon\Database\Eloquent\Model;
+use Arpon\Database\Schema\Builder;
 
 class Manager
 {
     /**
      * The database manager instance.
      *
-     * @var \Arpon\Database\DatabaseManager
+     * @var DatabaseManager
      */
-    protected $manager;
+    protected DatabaseManager $manager;
 
     /**
      * The connection factory instance.
      *
-     * @var \Arpon\Database\Connectors\ConnectionFactory
+     * @var ConnectionFactory
      */
-    protected $factory;
+    protected ConnectionFactory $factory;
 
     /**
      * The database connections configuration.
      *
      * @var array
      */
-    protected $connections = [];
+    protected array $connections = [];
 
     /**
      * The default connection name.
      *
      * @var string
      */
-    protected $default = 'default';
+    protected string $default = 'default';
 
     /**
      * Create a new database capsule manager.
@@ -52,7 +54,7 @@ class Manager
      *
      * @return void
      */
-    protected function setupManager()
+    protected function setupManager(): void
     {
         $config = [
             'default' => $this->default,
@@ -66,10 +68,10 @@ class Manager
      * Add a connection to the manager.
      *
      * @param  array  $config
-     * @param  string  $name
+     * @param string $name
      * @return void
      */
-    public function addConnection(array $config, $name = 'default')
+    public function addConnection(array $config, string $name = 'default'): void
     {
         // Add required default values if not present
         $config = array_merge([
@@ -91,9 +93,9 @@ class Manager
     /**
      * Get the database manager instance.
      *
-     * @return \Arpon\Database\DatabaseManager
+     * @return DatabaseManager
      */
-    public function getDatabaseManager()
+    public function getDatabaseManager(): DatabaseManager
     {
         return $this->manager;
     }
@@ -101,10 +103,10 @@ class Manager
     /**
      * Get a connection instance from the manager.
      *
-     * @param  string|null  $connection
-     * @return \Arpon\Database\ConnectionInterface
+     * @param string|null $connection
+     * @return ConnectionInterface
      */
-    public function connection($connection = null)
+    public function connection(string $connection = null): ConnectionInterface
     {
         return $this->manager->connection($connection);
     }
@@ -112,10 +114,10 @@ class Manager
     /**
      * Get a schema builder instance for the connection.
      *
-     * @param  string|null  $connection
-     * @return \Arpon\Database\Schema\Builder
+     * @param string|null $connection
+     * @return Builder
      */
-    public function schema($connection = null)
+    public function schema(string $connection = null): Builder
     {
         return $this->connection($connection)->getSchemaBuilder();
     }
@@ -123,11 +125,11 @@ class Manager
     /**
      * Get a query builder for the given table.
      *
-     * @param  string  $table
-     * @param  string|null  $connection
+     * @param string $table
+     * @param string|null $connection
      * @return \Arpon\Database\Query\Builder
      */
-    public function table($table, $connection = null)
+    public function table(string $table, string $connection = null): \Arpon\Database\Query\Builder
     {
         return $this->connection($connection)->table($table);
     }
@@ -137,7 +139,7 @@ class Manager
      *
      * @return void
      */
-    public function setAsGlobal()
+    public function setAsGlobal(): void
     {
         Model::setConnectionResolver($this->manager);
     }
@@ -147,7 +149,7 @@ class Manager
      *
      * @return void
      */
-    public function bootEloquent()
+    public function bootEloquent(): void
     {
         Model::setConnectionResolver($this->manager);
 
@@ -160,10 +162,10 @@ class Manager
     /**
      * Set the default connection name.
      *
-     * @param  string  $name
+     * @param string $name
      * @return void
      */
-    public function setDefaultConnection($name)
+    public function setDefaultConnection(string $name): void
     {
         $this->default = $name;
         $this->setupManager();
@@ -174,7 +176,7 @@ class Manager
      *
      * @return string
      */
-    public function getDefaultConnection()
+    public function getDefaultConnection(): string
     {
         return $this->default;
     }
@@ -184,7 +186,7 @@ class Manager
      *
      * @return array
      */
-    public function getConnections()
+    public function getConnections(): array
     {
         return $this->connections;
     }
@@ -192,11 +194,11 @@ class Manager
     /**
      * Dynamically pass methods to the default connection.
      *
-     * @param  string  $method
-     * @param  array  $parameters
+     * @param string $method
+     * @param array $parameters
      * @return mixed
      */
-    public function __call($method, $parameters)
+    public function __call(string $method, array $parameters)
     {
         return $this->connection()->$method(...$parameters);
     }

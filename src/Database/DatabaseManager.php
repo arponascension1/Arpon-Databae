@@ -317,7 +317,7 @@ class DatabaseManager implements ConnectionResolverInterface
      *
      * @return array
      */
-    public function getConnections()
+    public function getConnections(): array
     {
         return $this->connections;
     }
@@ -328,7 +328,7 @@ class DatabaseManager implements ConnectionResolverInterface
      * @param  callable  $reconnector
      * @return void
      */
-    public function setReconnector(callable $reconnector)
+    public function setReconnector(callable $reconnector): void
     {
         $this->reconnector = $reconnector;
     }
