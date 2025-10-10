@@ -2,6 +2,59 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2025-10-10
+
+### Added
+- **Complete Soft Delete System**
+  - `SoftDeletes` trait for models with automatic soft delete functionality
+  - `SoftDeleteScope` global scope with automatic query filtering
+  - Soft delete methods: `delete()`, `forceDelete()`, `restore()`, `trashed()`
+  - Query scope extensions: `withTrashed()`, `onlyTrashed()`, `withoutTrashed()`
+  - Bulk operations support for soft delete queries
+  - Laravel-compatible API with full feature parity
+
+- **Enhanced Scopes System**
+  - `Scope` interface for global scopes implementation
+  - `ActiveScope` and `PublishedScope` common scopes
+  - Global scope registration and management system
+  - Local scope support with dynamic method registration
+  - Scope removal and isolation mechanisms
+
+- **Advanced Model Boot System**
+  - Automatic trait discovery and boot method calling
+  - Trait initialization system for model instances
+  - Support for `boot{TraitName}()` and `initialize{TraitName}()` patterns
+  - Recursive trait resolution with `class_uses_recursive()`
+
+- **Model Event System**
+  - Model event registration and firing mechanisms
+  - Support for model lifecycle events (deleting, deleted, restoring, restored)
+  - Event dispatcher integration with customizable callbacks
+  - Event-driven architecture for extensible model behavior
+
+- **Query Builder Macro System**
+  - Dynamic method registration for query builder extensions
+  - Macro support for custom query functionality
+  - Integration with scope system for seamless API extension
+
+### Enhanced
+- **EloquentBuilder Improvements**
+  - Added macro registration and dynamic method calling
+  - Enhanced `onDelete` callback support for custom delete behavior
+  - Improved scope integration and method forwarding
+  - Better error handling for undefined methods
+
+- **Model Class Enhancements**
+  - Added global scope management methods
+  - Trait boot and initialization system
+  - Model event system integration
+  - Enhanced helper functions for data manipulation
+
+### Documentation
+- Added comprehensive soft delete implementation guide
+- Enhanced API documentation with usage examples
+- Updated composer.json with new feature keywords
+
 ## [2.1.1] - 2025-10-09
 
 ### Fixed

@@ -18,9 +18,11 @@ use Arpon\Database\Eloquent\Relations\MorphTo;
 use Arpon\Database\Eloquent\Relations\MorphToMany;
 use Arpon\Database\Eloquent\Relations\BelongsToMany;
 use Arpon\Database\Eloquent\EloquentBuilder;
+use Arpon\Database\Eloquent\Scopes\Scope;
 use ArrayAccess;
 use JsonSerializable;
 use Exception;
+use Closure;
 
 abstract class Model implements ArrayAccess, JsonSerializable
 {
@@ -143,12 +145,158 @@ abstract class Model implements ArrayAccess, JsonSerializable
     protected static array $morphMap = [];
 
     /**
+     * The global scopes for the model.
+     */
+    protected static array $globalScopes = [];
+
+    /**
+     * Indicates if the model should be booted.
+     */
+    protected static array $booted = [];
+
+    /**
+     * The array of trait initializers that will be called on each new instance.
+     */
+    protected static array $traitInitializers = [];
+
+    /**
      * Create a new Eloquent model instance.
      */
     public function __construct(array $attributes = [])
     {
+        $this->bootIfNotBooted();
+        $this->initializeTraits();
         $this->syncOriginal();
         $this->fill($attributes);
+    }
+
+    /**
+     * Check if the model needs to be booted and if so, do it.
+     */
+    protected function bootIfNotBooted(): void
+    {
+        if (!isset(static::$booted[static::class])) {
+            static::$booted[static::class] = true;
+            static::boot();
+        }
+    }
+
+    /**
+     * The "boot" method of the model.
+     */
+    protected static function boot(): void
+    {
+        static::bootTraits();
+    }
+
+    /**
+     * Boot all of the bootable traits on the model.
+     */
+    protected static function bootTraits(): void
+    {
+        $class = static::class;
+
+        $booted = [];
+
+        static::$traitInitializers[$class] = [];
+
+        foreach (class_uses_recursive($class) as $trait) {
+            $method = 'boot'.class_basename($trait);
+
+            if (method_exists($class, $method) && ! in_array($method, $booted)) {
+                forward_static_call([$class, $method]);
+
+                $booted[] = $method;
+            }
+
+            if (method_exists($class, $method = 'initialize'.class_basename($trait))) {
+                static::$traitInitializers[$class][] = $method;
+
+                static::$traitInitializers[$class] = array_unique(
+                    static::$traitInitializers[$class]
+                );
+            }
+        }
+    }
+
+    /**
+     * Initialize any initializable traits on the model.
+     */
+    protected function initializeTraits(): void
+    {
+        foreach (static::$traitInitializers[static::class] as $method) {
+            $this->{$method}();
+        }
+    }
+
+    /**
+     * Register a new global scope on the model.
+     */
+    public static function addGlobalScope($scope, $implementation = null): void
+    {
+        if (is_string($scope) && $implementation !== null) {
+            static::$globalScopes[static::class][$scope] = $implementation;
+        } elseif ($scope instanceof Scope) {
+            static::$globalScopes[static::class][get_class($scope)] = $scope;
+        } elseif ($scope instanceof Closure) {
+            static::$globalScopes[static::class][spl_object_id($scope)] = $scope;
+        }
+    }
+
+    /**
+     * Determine if a model has a global scope.
+     */
+    public static function hasGlobalScope($scope): bool
+    {
+        return !is_null(static::getGlobalScope($scope));
+    }
+
+    /**
+     * Get a global scope registered with the model.
+     */
+    public static function getGlobalScope($scope)
+    {
+        if (is_string($scope)) {
+            return static::$globalScopes[static::class][$scope] ?? null;
+        }
+
+        return static::$globalScopes[static::class][get_class($scope)] ?? null;
+    }
+
+    /**
+     * Get the global scopes for this model instance.
+     */
+    public function getGlobalScopes(): array
+    {
+        return static::$globalScopes[static::class] ?? [];
+    }
+
+    /**
+     * Remove a global scope from the model.
+     */
+    public static function removeGlobalScope($scope): void
+    {
+        if (is_string($scope)) {
+            unset(static::$globalScopes[static::class][$scope]);
+        } elseif ($scope instanceof Scope) {
+            unset(static::$globalScopes[static::class][get_class($scope)]);
+        }
+    }
+
+    /**
+     * Remove all global scopes from the model.
+     */
+    public static function clearGlobalScopes(): void
+    {
+        static::$globalScopes[static::class] = [];
+    }
+
+    /**
+     * Get all the global scopes for all models.
+     */
+    public static function getAllGlobalScopes(): array
+    {
+        return static::$globalScopes;
     }
 
     /**
@@ -1140,7 +1288,14 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function newEloquentBuilder(QueryBuilder $query): EloquentBuilder
     {
-        return new EloquentBuilder($query);
+        $builder = new EloquentBuilder($query);
+        
+        // Apply global scopes to the builder
+        foreach ($this->getGlobalScopes() as $identifier => $scope) {
+            $builder->withGlobalScope($identifier, $scope);
+        }
+        
+        return $builder;
     }
 
     /**
@@ -2330,6 +2485,67 @@ abstract class Model implements ArrayAccess, JsonSerializable
         return ! $this->isDirty(...func_get_args());
     }
 
+    /**
+     * The event map for the model.
+     *
+     * @var array
+     */
+    protected static $events = [];
+
+    /**
+     * Register a model event with the dispatcher.
+     *
+     * @param  string  $event
+     * @param  callable  $callback
+     * @return void
+     */
+    public static function registerModelEvent($event, $callback)
+    {
+        $class = static::class;
+        if (!isset(static::$events[$class])) {
+            static::$events[$class] = [];
+        }
+        if (!isset(static::$events[$class][$event])) {
+            static::$events[$class][$event] = [];
+        }
+        static::$events[$class][$event][] = $callback;
+    }
+
+    /**
+     * Fire the given event for the model.
+     *
+     * @param  string  $event
+     * @param  bool  $halt
+     * @return mixed
+     */
+    protected function fireModelEvent($event, $halt = true)
+    {
+        if (!isset(static::$events[static::class][$event])) {
+            return true;
+        }
+
+        $result = true;
+        foreach (static::$events[static::class][$event] as $callback) {
+            $response = call_user_func($callback, $this);
+            if ($halt && $response === false) {
+                $result = false;
+                break;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Remove all of the event listeners for the model.
+     *
+     * @return void
+     */
+    public static function flushEventListeners()
+    {
+        unset(static::$events[static::class]);
+    }
+
 }
 
 // Helper functions
@@ -2408,6 +2624,36 @@ if (!function_exists('value')) {
     function value($value)
     {
         return $value instanceof \Closure ? $value() : $value;
+    }
+}
+
+if (!function_exists('class_uses_recursive')) {
+    function class_uses_recursive($class)
+    {
+        if (is_object($class)) {
+            $class = get_class($class);
+        }
+
+        $results = [];
+
+        foreach (array_reverse(class_parents($class)) + [$class => $class] as $class) {
+            $results += trait_uses_recursive($class);
+        }
+
+        return array_unique($results);
+    }
+}
+
+if (!function_exists('trait_uses_recursive')) {
+    function trait_uses_recursive($trait)
+    {
+        $traits = class_uses($trait);
+
+        foreach ($traits as $trait) {
+            $traits += trait_uses_recursive($trait);
+        }
+
+        return $traits;
     }
 }
 

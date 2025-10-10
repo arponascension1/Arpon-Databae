@@ -1,7 +1,7 @@
 {
     "name": "arpon/database",
-    "description": "Arpon Database - Advanced PHP Database Abstraction Layer with Laravel-compatible ORM, Schema Builder, Query Builder for MySQL and SQLite. Features 25+ column types, foreign key CASCADE support, advanced relationships, and high-performance database operations.",
-    "version": "2.1.1",
+    "description": "Arpon Database - Advanced PHP Database Abstraction Layer with Laravel-compatible ORM, Schema Builder, Query Builder for MySQL and SQLite. Features 25+ column types, foreign key CASCADE support, advanced relationships, soft deletes, enhanced scopes system, and high-performance database operations.",
+    "version": "2.2.0",
     "type": "library",
     "keywords": [
         "arpon",
@@ -18,13 +18,17 @@
         "migration",
         "foreign-key",
         "cascade-delete",
+        "soft-delete",
+        "scopes",
+        "global-scopes",
         "database-abstraction",
         "pdo",
         "sql",
         "php-library",
         "relationships",
         "polymorphic",
-        "through-relationships"
+        "through-relationships",
+        "trait-boot-system"
     ],
     "homepage": "https://github.com/arponascension1/Arpon-Databae",
     "license": "MIT",

@@ -3,6 +3,7 @@
 namespace Arpon\Database\Eloquent;
 
 use Arpon\Database\Query\Builder as QueryBuilder;
+use Arpon\Database\Eloquent\Scopes\Scope;
 use Closure;
 use BadMethodCallException;
 use Error;
@@ -18,6 +19,16 @@ class EloquentBuilder
      * The model being queried.
      */
     protected Model $model;
+
+    /**
+     * The registered builder macros.
+     */
+    protected static array $macros = [];
+
+    /**
+     * A replacement for the typical delete function.
+     */
+    protected $onDelete;
 
     /**
      * Create a new Eloquent query builder instance.
@@ -587,18 +598,15 @@ class EloquentBuilder
         $builder = clone $this;
 
         foreach ($this->scopes as $identifier => $scope) {
-            if (!isset($builder->scopes[$identifier])) {
+            if (!isset($builder->scopes[$identifier]) || in_array($identifier, $this->removedScopes)) {
                 continue;
             }
 
-            $builder->callScope(function (EloquentBuilder $builder) use ($scope) {
-                // If the scope is a Closure we will call the scope with the builder instance
-                // and our application container instance, then the scope can do whatever it
-                // needs to the query to implement the custom functionality.
-                if ($scope instanceof Closure) {
-                    $scope($builder);
-                }
-            });
+            if ($scope instanceof Scope) {
+                $scope->apply($builder, $this->getModel());
+            } elseif ($scope instanceof Closure) {
+                $builder->callScope($scope);
+            }
         }
 
         return $builder;
@@ -608,6 +616,65 @@ class EloquentBuilder
      * The global scopes applied to the builder.
      */
     protected array $scopes = [];
+
+    /**
+     * The scopes that should be removed from the query.
+     */
+    protected array $removedScopes = [];
+
+    /**
+     * Add a global scope to the builder.
+     */
+    public function withGlobalScope($identifier, $scope): static
+    {
+        $this->scopes[$identifier] = $scope;
+        
+        if (method_exists($scope, 'extend')) {
+            $scope->extend($this);
+        }
+        
+        return $this;
+    }
+
+    /**
+     * Remove a global scope from the builder.
+     */
+    public function withoutGlobalScope($scope): static
+    {
+        if (!is_array($scope)) {
+            $scope = [$scope];
+        }
+
+        foreach ($scope as $identifier) {
+            unset($this->scopes[$identifier]);
+            $this->removedScopes[] = $identifier;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove all global scopes from the builder.
+     */
+    public function withoutGlobalScopes(?array $scopes = null): static
+    {
+        if (is_null($scopes)) {
+            $this->scopes = [];
+            $this->removedScopes = array_keys($this->scopes);
+        } else {
+            return $this->withoutGlobalScope($scopes);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the global scopes for this builder instance.
+     */
+    public function getScopes(): array
+    {
+        return $this->scopes;
+    }
 
     /**
      * Apply the given scope on the current builder instance.
@@ -620,14 +687,41 @@ class EloquentBuilder
     }
 
     /**
+     * Register a custom macro.
+     */
+    public function macro(string $name, callable $macro): void
+    {
+        static::$macros[$name] = $macro;
+    }
+
+    /**
+     * Register a replacement for the default delete function.
+     */
+    public function onDelete(callable $callback): void
+    {
+        $this->onDelete = $callback;
+    }
+
+    /**
      * Dynamically handle calls into the query instance.
      */
     public function __call(string $method, array $parameters)
     {
+        // Check for registered macros first
+        if (isset(static::$macros[$method])) {
+            $macro = static::$macros[$method];
+            if ($macro instanceof Closure) {
+                return $macro($this, ...$parameters);
+            }
+            return $macro(...$parameters);
+        }
+
+        // Check for model scopes
         if (method_exists($this->model, $scope = 'scope' . ucfirst($method))) {
             return $this->callScope([$this->model, $scope], $parameters);
         }
 
+        // Forward to query builder
         $this->forwardCallTo($this->query, $method, $parameters);
 
         return $this;
