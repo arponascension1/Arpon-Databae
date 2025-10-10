@@ -1,6 +1,6 @@
 # Arpon Database - Advanced PHP Database Abstraction Layer
 
-[![Version](https://img.shields.io/badge/version-2.1.1-blue.svg)](https://github.com/arponascension1/Arpon-Databae)
+[![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)](https://github.com/arponascension1/Arpon-Database)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PHP](https://img.shields.io/badge/php-%5E7.4%7C%5E8.0-blue.svg)](https://php.net)
 
@@ -439,7 +439,15 @@ php cascade_test.php      # Cross-database CASCADE test
 
 ## 🔄 Version History
 
-### Version 2.1.0 (Current)
+### Version 2.2.0 (Current)
+- ✅ **Enhanced Collection Methods** - Added `values()`, `unique()`, and `sort()` methods with advanced sorting capabilities
+- ✅ **Comprehensive Soft Delete System** - Full Laravel-compatible soft delete functionality with SoftDeletes trait, SoftDeleteScope, and query extensions
+- ✅ **Advanced Scopes System** - Enhanced global and local scopes with dynamic scope management
+- ✅ **Model Event System** - Complete event-driven architecture with model lifecycle events
+- ✅ **Trait Boot System** - Automatic trait discovery and initialization
+- ✅ **Query Builder Macros** - Dynamic method injection for scope extensions
+
+### Version 2.1.0
 - ✅ **Complete Relationship System**: 11 relationship types (hasOne, hasMany, belongsTo, hasOneThrough, hasManyThrough, morphOne, morphMany, morphTo, morphToMany, morphedByMany, belongsToMany)
 - ✅ **Through Relationships**: Access distant models through intermediate relationships
 - ✅ **Polymorphic Relationships**: One model can belong to multiple other model types

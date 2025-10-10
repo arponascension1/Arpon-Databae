@@ -340,6 +340,153 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
+     * Get all of the values from the collection.
+     *
+     * @return static
+     */
+    public function values()
+    {
+        return new static(array_values($this->items));
+    }
+
+    /**
+     * Return only unique items from the collection array.
+     *
+     * @param  string|callable|null  $key
+     * @param  bool  $strict
+     * @return static
+     */
+    public function unique($key = null, $strict = false)
+    {
+        if (is_null($key) && $strict === false) {
+            return new static(array_unique($this->items, SORT_REGULAR));
+        }
+
+        $exists = [];
+
+        return $this->filter(function ($item, $k) use ($key, $strict, &$exists) {
+            if (is_null($key)) {
+                $id = $item;
+            } elseif (is_callable($key)) {
+                $id = $key($item, $k);
+            } elseif (is_object($item)) {
+                $id = $item->{$key};
+            } elseif (is_array($item)) {
+                $id = $item[$key];
+            } else {
+                $id = $item;
+            }
+
+            if (in_array($id, $exists, $strict)) {
+                return false;
+            }
+
+            $exists[] = $id;
+
+            return true;
+        });
+    }
+
+    /**
+     * Sort through each item with a callback.
+     *
+     * @param  callable|string|null  $callback
+     * @param  int  $options
+     * @param  bool  $descending
+     * @return static
+     */
+    public function sort($callback = null, $options = SORT_REGULAR, $descending = false)
+    {
+        $items = $this->items;
+
+        if (is_callable($callback)) {
+            uasort($items, $callback);
+        } elseif (is_string($callback)) {
+            // Sort by attribute name
+            uasort($items, function ($a, $b) use ($callback, $descending) {
+                $aVal = is_object($a) ? $a->{$callback} : (is_array($a) ? $a[$callback] : $a);
+                $bVal = is_object($b) ? $b->{$callback} : (is_array($b) ? $b[$callback] : $b);
+                
+                if ($aVal == $bVal) {
+                    return 0;
+                }
+                
+                $result = ($aVal < $bVal) ? -1 : 1;
+                return $descending ? -$result : $result;
+            });
+        } else {
+            // Default sort
+            if ($descending) {
+                arsort($items, $options);
+            } else {
+                asort($items, $options);
+            }
+        }
+
+        return new static($items);
+    }
+
+    /**
+     * Sort the collection in descending order using the given callback.
+     *
+     * @param  callable|string|null  $callback
+     * @param  int  $options
+     * @return static
+     */
+    public function sortDesc($callback = null, $options = SORT_REGULAR)
+    {
+        return $this->sort($callback, $options, true);
+    }
+
+    /**
+     * Sort the collection by the given key.
+     *
+     * @param  callable|string  $callback
+     * @param  int  $options
+     * @param  bool  $descending
+     * @return static
+     */
+    public function sortBy($callback, $options = SORT_REGULAR, $descending = false)
+    {
+        if (is_string($callback)) {
+            return $this->sort($callback, $options, $descending);
+        }
+
+        $results = [];
+
+        // First we will loop through the items and get the comparator from a callback
+        // function which we were given. Then, we will sort the returned values and
+        // grab the corresponding values for the sorted keys from this array.
+        foreach ($this->items as $key => $value) {
+            $results[$key] = $callback($value, $key);
+        }
+
+        $descending ? arsort($results, $options)
+                    : asort($results, $options);
+
+        // Once we have sorted all of the keys in the array, we will loop through them
+        // and grab the corresponding model so we can set the underlying items list
+        // to the sorted version. Then we'll just return the collection instance.
+        foreach (array_keys($results) as $key) {
+            $results[$key] = $this->items[$key];
+        }
+
+        return new static($results);
+    }
+
+    /**
+     * Sort the collection by the given key in descending order.
+     *
+     * @param  callable|string  $callback
+     * @param  int  $options
+     * @return static
+     */
+    public function sortByDesc($callback, $options = SORT_REGULAR)
+    {
+        return $this->sortBy($callback, $options, true);
+    }
+
+    /**
      * Convert the collection to its string representation.
      *
      * @return string
