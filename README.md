@@ -1,6 +1,6 @@
 # 🚀 Arpon Database
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/arponascension1/Arpon-Database/releases/tag/v1.0.0)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/arponascension1/Arpon-Database/releases/tag/v1.1.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PHP](https://img.shields.io/badge/php-8.0%2B-blue.svg)](https://php.net)
 [![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/arponascension1/Arpon-Database)
@@ -12,7 +12,7 @@
 
 🎯 **Laravel Compatible** - Drop-in replacement for Laravel's database layer  
 🔧 **No Framework Required** - Works standalone or with any PHP project  
-🏗️ **Advanced Schema Builder** - 25+ column types with foreign key constraints  
+🏗️ **Advanced Schema Builder** - 25+ column types with `foreignId()->constrained()` support  
 🔗 **Complete ORM** - Full Eloquent relationships including polymorphic  
 ⚡ **High Performance** - Optimized queries with proper caching  
 🛡️ **Production Ready** - Thoroughly tested and battle-hardened  
@@ -142,14 +142,11 @@ DB::schema()->create('users', function($table) {
 });
 
 DB::schema()->create('posts', function($table) {
-    $table->increments('id');
+    $table->id();  // Laravel-style big integer primary key
     $table->string('title');
     $table->text('content');
-    $table->unsignedInteger('user_id');
+    $table->foreignId('user_id')->constrained()->onDelete('cascade');  // ✨ NEW in v1.1.0!
     $table->timestamps();
-    
-    // Foreign key with CASCADE
-    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 });
 ```
 
