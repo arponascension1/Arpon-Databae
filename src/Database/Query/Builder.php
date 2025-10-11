@@ -841,7 +841,7 @@ class Builder
     {
         return collect($this->onceWithColumns(array_wrap($columns), function () {
             return $this->processor->processSelect($this, $this->runSelect());
-        }))->all();
+        }));
     }
 
     /**

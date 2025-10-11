@@ -39,6 +39,13 @@ class Manager
     protected string $default = 'default';
 
     /**
+     * The global capsule instance.
+     *
+     * @var static
+     */
+    protected static $instance;
+
+    /**
      * Create a new database capsule manager.
      *
      * @return void
@@ -129,9 +136,25 @@ class Manager
      * @param string|null $connection
      * @return \Arpon\Database\Query\Builder
      */
-    public function table(string $table, string $connection = null): \Arpon\Database\Query\Builder
+    private function tableInstance(string $table, string $connection = null): \Arpon\Database\Query\Builder
     {
         return $this->connection($connection)->table($table);
+    }
+
+    /**
+     * Get a query builder for the given table (static method only).
+     *
+     * @param string $table
+     * @param string|null $connection
+     * @return \Arpon\Database\Query\Builder
+     */
+    public static function table(string $table, string $connection = null): \Arpon\Database\Query\Builder
+    {
+        if (!static::$instance) {
+            throw new \RuntimeException('Capsule not set as global. Call setAsGlobal() first.');
+        }
+        
+        return static::$instance->tableInstance($table, $connection);
     }
 
     /**
@@ -141,6 +164,7 @@ class Manager
      */
     public function setAsGlobal(): void
     {
+        static::$instance = $this;
         Model::setConnectionResolver($this->manager);
     }
 
@@ -200,6 +224,132 @@ class Manager
      */
     public function __call(string $method, array $parameters)
     {
+        // Handle table() method specifically to maintain backward compatibility
+        if ($method === 'table') {
+            $table = $parameters[0] ?? null;
+            $connection = $parameters[1] ?? null;
+            return $this->tableInstance($table, $connection);
+        }
+        
         return $this->connection()->$method(...$parameters);
+    }
+
+    /**
+     * Get the global capsule instance.
+     *
+     * @return static
+     */
+    public static function getInstance()
+    {
+        return static::$instance;
+    }
+
+
+
+    /**
+     * Run a select statement against the database (static version).
+     *
+     * @param string $query
+     * @param array $bindings
+     * @param string|null $connection
+     * @return array
+     */
+    public static function select(string $query, array $bindings = [], string $connection = null): array
+    {
+        if (!static::$instance) {
+            throw new \RuntimeException('Capsule not set as global. Call setAsGlobal() first.');
+        }
+
+        return static::$instance->connection($connection)->select($query, $bindings);
+    }
+
+    /**
+     * Run an insert statement against the database (static version).
+     *
+     * @param string $query
+     * @param array $bindings
+     * @param string|null $connection
+     * @return bool
+     */
+    public static function insert(string $query, array $bindings = [], string $connection = null): bool
+    {
+        if (!static::$instance) {
+            throw new \RuntimeException('Capsule not set as global. Call setAsGlobal() first.');
+        }
+
+        return static::$instance->connection($connection)->insert($query, $bindings);
+    }
+
+    /**
+     * Run an update statement against the database (static version).
+     *
+     * @param string $query
+     * @param array $bindings
+     * @param string|null $connection
+     * @return int
+     */
+    public static function update(string $query, array $bindings = [], string $connection = null): int
+    {
+        if (!static::$instance) {
+            throw new \RuntimeException('Capsule not set as global. Call setAsGlobal() first.');
+        }
+
+        return static::$instance->connection($connection)->update($query, $bindings);
+    }
+
+    /**
+     * Run a delete statement against the database (static version).
+     *
+     * @param string $query
+     * @param array $bindings
+     * @param string|null $connection
+     * @return int
+     */
+    public static function delete(string $query, array $bindings = [], string $connection = null): int
+    {
+        if (!static::$instance) {
+            throw new \RuntimeException('Capsule not set as global. Call setAsGlobal() first.');
+        }
+
+        return static::$instance->connection($connection)->delete($query, $bindings);
+    }
+
+    /**
+     * Execute a statement and return the boolean result (static version).
+     *
+     * @param string $query
+     * @param array $bindings
+     * @param string|null $connection
+     * @return bool
+     */
+    public static function statement(string $query, array $bindings = [], string $connection = null): bool
+    {
+        if (!static::$instance) {
+            throw new \RuntimeException('Capsule not set as global. Call setAsGlobal() first.');
+        }
+
+        return static::$instance->connection($connection)->statement($query, $bindings);
+    }
+
+    /**
+     * Dynamically pass static method calls to the global instance.
+     *
+     * @param string $method
+     * @param array $parameters
+     * @return mixed
+     */
+    public static function __callStatic(string $method, array $parameters)
+    {
+        if (!static::$instance) {
+            throw new \RuntimeException('Capsule not set as global. Call setAsGlobal() first.');
+        }
+
+        // First check if the method exists on the instance
+        if (method_exists(static::$instance, $method)) {
+            return static::$instance->$method(...$parameters);
+        }
+
+        // If not, try to call it via the __call method (which forwards to connection)
+        return static::$instance->__call($method, $parameters);
     }
 }

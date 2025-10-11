@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.3] - 2025-10-11
+
+### Added
+- **Static Database Methods** - Full Laravel-compatible DB facade support for static method calls (DB::select(), DB::table(), DB::insert(), etc.)
+- **Hybrid Method Support** - Manager class now supports both static and instance method calls seamlessly
+
+### Fixed
+- **Static Method Access** - Resolved "Call to undefined method DB::select()" and similar static method errors
+- **Query Builder Collections** - Fixed Query\Builder get() method to return Collection objects instead of arrays for Laravel compatibility
+- **Method Resolution** - Implemented proper static method delegation while maintaining backward compatibility for instance methods
+
+### Technical Changes
+- Added static method infrastructure to Capsule\Manager class
+- Implemented __callStatic() method delegation to global instance
+- Modified Query\Builder get() method to return Collections consistently
+- Enhanced __call() method to handle table() method delegation transparently
+
 ## [2.2.2] - 2025-10-11
 
 ### Added
