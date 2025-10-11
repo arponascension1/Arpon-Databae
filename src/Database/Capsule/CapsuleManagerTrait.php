@@ -9,22 +9,22 @@ trait CapsuleManagerTrait
      *
      * @var object
      */
-    protected static $instance;
+    protected static object $instance;
 
     /**
      * The container instance.
      *
-     * @var \Arpon\Database\Container
+     * @var Container
      */
-    protected $container;
+    protected Container $container;
 
     /**
      * Setup the IoC container instance.
      *
-     * @param  \Arpon\Database\Container  $container
+     * @param Container $container
      * @return void
      */
-    protected function setupContainer($container)
+    protected function setupContainer(Container $container)
     {
         $this->container = $container;
 
@@ -46,9 +46,9 @@ trait CapsuleManagerTrait
     /**
      * Get the IoC container instance.
      *
-     * @return \Arpon\Database\Container
+     * @return Container
      */
-    public function getContainer()
+    public function getContainer(): Container
     {
         return $this->container;
     }
@@ -56,10 +56,10 @@ trait CapsuleManagerTrait
     /**
      * Set the IoC container instance.
      *
-     * @param  \Arpon\Database\Container  $container
+     * @param Container $container
      * @return void
      */
-    public function setContainer($container)
+    public function setContainer(Container $container)
     {
         $this->container = $container;
     }

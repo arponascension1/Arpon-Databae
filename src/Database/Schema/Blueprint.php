@@ -4,6 +4,7 @@ namespace Arpon\Database\Schema;
 
 use Closure;
 use Arpon\Database\Schema\ColumnDefinition;
+use Arpon\Database\Schema\ForeignIdDefinition;
 use Arpon\Database\Support\Fluent;
 
 class Blueprint
@@ -321,6 +322,19 @@ class Blueprint
     public function unsignedBigInteger($column, $autoIncrement = false)
     {
         return $this->addColumn('bigInteger', $column, compact('autoIncrement'))->unsigned();
+    }
+
+    /**
+     * Create a new foreign ID column (unsigned big integer with foreign key support).
+     *
+     * @param  string  $column
+     * @return \Arpon\Database\Schema\ForeignIdDefinition
+     */
+    public function foreignId($column)
+    {
+        $columnDefinition = $this->unsignedBigInteger($column);
+        
+        return new ForeignIdDefinition($this, $columnDefinition, $column);
     }
 
     /**

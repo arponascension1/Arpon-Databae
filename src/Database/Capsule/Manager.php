@@ -14,16 +14,16 @@ class Manager
     /**
      * The database manager instance.
      *
-     * @var \Arpon\Database\DatabaseManager
+     * @var DatabaseManager
      */
-    protected $manager;
+    protected DatabaseManager $manager;
 
     /**
      * Create a new database capsule manager.
      *
-     * @param  \Arpon\Database\Capsule\Container|null  $container
+     * @param Container|null $container
      */
-    public function __construct($container = null)
+    public function __construct(Container $container = null)
     {
         $this->setupContainer($container ?: new Container);
 
@@ -160,7 +160,7 @@ class Manager
     /**
      * Get the database manager instance.
      *
-     * @return \Arpon\Database\DatabaseManager
+     * @return DatabaseManager
      */
     public function getDatabaseManager()
     {

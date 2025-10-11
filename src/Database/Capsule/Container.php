@@ -11,29 +11,29 @@ class Container implements ArrayAccess
      *
      * @var static
      */
-    protected static $instance;
+    protected static Container $instance;
 
     /**
      * The container's bindings.
      *
      * @var array[]
      */
-    protected $bindings = [];
+    protected array $bindings = [];
 
     /**
      * The container's shared instances.
      *
      * @var object[]
      */
-    protected $instances = [];
+    protected array $instances = [];
 
     /**
      * Determine if the given abstract type has been bound.
      *
-     * @param  string  $abstract
+     * @param string $abstract
      * @return bool
      */
-    public function bound($abstract)
+    public function bound(string $abstract): bool
     {
         return isset($this->bindings[$abstract]) ||
                isset($this->instances[$abstract]);
