@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.2] - 2025-10-11
+
+### Added
+- **Collection Method** - Added missing `isNotEmpty()` method to Support\Collection class for checking non-empty collections
+
+### Fixed
+- **Missing Method Error** - Resolved "Call to undefined method isNotEmpty()" fatal error in Eloquent collections
+
 ## [2.2.1] - 2025-10-11
 
 ### Fixed
