@@ -1341,7 +1341,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
         $instance = new static;
 
         $models = array_map(function ($item) use ($instance) {
-            return $instance->newFromBuilder($item);
+            // Convert stdClass objects to arrays for compatibility
+            $attributes = is_object($item) ? (array) $item : $item;
+            return $instance->newFromBuilder($attributes);
         }, $items);
 
         return $instance->newCollection($models);
