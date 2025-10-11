@@ -210,7 +210,7 @@ class SqliteGrammar extends Grammar
     /**
      * Get the SQL for the column data type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function getType($column)
@@ -221,7 +221,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a big integer type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeBigInteger($column)
@@ -232,7 +232,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for an integer type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeInteger($column)
@@ -243,7 +243,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a medium integer type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeMediumInteger($column)
@@ -254,7 +254,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a small integer type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeSmallInteger($column)
@@ -265,7 +265,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a tiny integer type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeTinyInteger($column)
@@ -276,7 +276,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a string type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeString($column)
@@ -287,7 +287,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a text type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeText($column)
@@ -298,7 +298,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a boolean type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeBoolean($column)
@@ -309,7 +309,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a date type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeDate($column)
@@ -320,7 +320,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a date-time type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeDateTime($column)
@@ -331,7 +331,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a timestamp type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeTimestamp($column)
@@ -342,7 +342,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a time type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeTime($column)
@@ -353,7 +353,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a decimal type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeDecimal($column)
@@ -364,7 +364,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a float type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeFloat($column)
@@ -375,7 +375,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a double type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeDouble($column)
@@ -386,7 +386,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a JSON type (SQLite stores as text).
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeJson($column)
@@ -397,7 +397,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a JSONB type (SQLite stores as text).
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeJsonb($column)
@@ -408,7 +408,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a UUID type (SQLite stores as text).
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeUuid($column)
@@ -419,7 +419,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for an enum type (SQLite stores as text).
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeEnum($column)
@@ -430,7 +430,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a set type (SQLite stores as text).
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeSet($column)
@@ -441,7 +441,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a binary type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeBinary($column)
@@ -452,7 +452,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a longText type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeLongText($column)
@@ -463,7 +463,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a mediumText type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeMediumText($column)
@@ -474,7 +474,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a year type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeYear($column)
@@ -485,7 +485,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a geometry type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeGeometry($column)
@@ -496,7 +496,7 @@ class SqliteGrammar extends Grammar
     /**
      * Create the column definition for a point type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typePoint($column)
@@ -507,7 +507,7 @@ class SqliteGrammar extends Grammar
     /**
      * Get the SQL for a nullable column modifier.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string|null
      */
     protected function modifyNullable($column)
@@ -518,7 +518,7 @@ class SqliteGrammar extends Grammar
     /**
      * Get the SQL for a default column modifier.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string|null
      */
     protected function modifyDefault($column)
@@ -531,7 +531,7 @@ class SqliteGrammar extends Grammar
     /**
      * Get the SQL for an auto-increment column modifier.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string|null
      */
     protected function modifyIncrement($column)

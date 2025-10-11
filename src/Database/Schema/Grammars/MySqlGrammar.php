@@ -384,7 +384,7 @@ class MySqlGrammar extends Grammar
     /**
      * Get the SQL for the column data type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function getType($column)
@@ -395,7 +395,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a big integer type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeBigInteger($column)
@@ -406,7 +406,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for an integer type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeInteger($column)
@@ -417,7 +417,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a medium integer type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeMediumInteger($column)
@@ -428,7 +428,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a small integer type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeSmallInteger($column)
@@ -439,7 +439,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a tiny integer type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeTinyInteger($column)
@@ -450,7 +450,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a string type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeString($column)
@@ -461,7 +461,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a text type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeText($column)
@@ -472,7 +472,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a medium text type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeMediumText($column)
@@ -483,7 +483,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a long text type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeLongText($column)
@@ -494,7 +494,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a boolean type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeBoolean($column)
@@ -505,7 +505,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a date type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeDate($column)
@@ -516,7 +516,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a date-time type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeDateTime($column)
@@ -533,7 +533,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a timestamp type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeTimestamp($column)
@@ -550,7 +550,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a decimal type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeDecimal($column)
@@ -561,7 +561,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a float type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeFloat($column)
@@ -572,7 +572,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a double type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeDouble($column)
@@ -583,7 +583,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a JSON type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeJson($column)
@@ -594,7 +594,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a JSONB type (MySQL uses JSON).
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeJsonb($column)
@@ -605,7 +605,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a UUID type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeUuid($column)
@@ -616,7 +616,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for an enum type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeEnum($column)
@@ -627,7 +627,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a set type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeSet($column)
@@ -638,7 +638,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a binary type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeBinary($column)
@@ -649,7 +649,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a year type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeYear($column)
@@ -660,7 +660,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a geometry type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typeGeometry($column)
@@ -671,7 +671,7 @@ class MySqlGrammar extends Grammar
     /**
      * Create the column definition for a point type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function typePoint($column)
@@ -682,7 +682,7 @@ class MySqlGrammar extends Grammar
     /**
      * Get the SQL for a nullable column modifier.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string|null
      */
     protected function modifyNullable($column)
@@ -695,7 +695,7 @@ class MySqlGrammar extends Grammar
     /**
      * Get the SQL for a default column modifier.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string|null
      */
     protected function modifyDefault($column)
@@ -708,7 +708,7 @@ class MySqlGrammar extends Grammar
     /**
      * Get the SQL for an auto-increment column modifier.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string|null
      */
     protected function modifyIncrement($column)
@@ -721,7 +721,7 @@ class MySqlGrammar extends Grammar
     /**
      * Get the SQL for an unsigned column modifier.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string|null
      */
     protected function modifyUnsigned($column)
@@ -734,7 +734,7 @@ class MySqlGrammar extends Grammar
     /**
      * Get the SQL for a character set column modifier.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string|null
      */
     protected function modifyCharset($column)
@@ -747,7 +747,7 @@ class MySqlGrammar extends Grammar
     /**
      * Get the SQL for a collation column modifier.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string|null
      */
     protected function modifyCollate($column)
@@ -760,7 +760,7 @@ class MySqlGrammar extends Grammar
     /**
      * Get the SQL for a comment column modifier.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string|null
      */
     protected function modifyComment($column)

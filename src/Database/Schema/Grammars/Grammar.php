@@ -63,7 +63,7 @@ class Grammar extends BaseGrammar
     /**
      * Get the SQL for the column data type.
      *
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function getType($column)
@@ -76,7 +76,7 @@ class Grammar extends BaseGrammar
      *
      * @param  string  $sql
      * @param  \Arpon\Database\Schema\Blueprint  $blueprint
-     * @param  \Arpon\Database\Schema\ColumnDefinition  $column
+     * @param  \Arpon\Database\Schema\Definitions\ColumnDefinition  $column
      * @return string
      */
     protected function addModifiers($sql, $blueprint, $column)

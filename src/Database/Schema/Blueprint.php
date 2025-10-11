@@ -3,8 +3,9 @@
 namespace Arpon\Database\Schema;
 
 use Closure;
-use Arpon\Database\Schema\ColumnDefinition;
-use Arpon\Database\Schema\ForeignIdDefinition;
+use Arpon\Database\Schema\Definitions\ColumnDefinition;
+use Arpon\Database\Schema\Definitions\ForeignIdDefinition;
+use Arpon\Database\Schema\Definitions\ForeignKeyDefinition;
 use Arpon\Database\Support\Fluent;
 
 class Blueprint
@@ -266,7 +267,7 @@ class Blueprint
      *
      * @param  string|array  $columns
      * @param  string  $name
-     * @return \Arpon\Database\Schema\ForeignKeyDefinition
+     * @return \Arpon\Database\Schema\Definitions\ForeignKeyDefinition
      */
     public function foreign($columns, $name = null)
     {
@@ -283,7 +284,7 @@ class Blueprint
      * Create a new auto-incrementing integer (4-byte) column on the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function increments($column)
     {
@@ -294,7 +295,7 @@ class Blueprint
      * Create a new auto-incrementing big integer (8-byte) column on the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function bigIncrements($column)
     {
@@ -305,7 +306,7 @@ class Blueprint
     /**
      * Create a new "id" column (auto-incrementing big integer primary key).
      *
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function id($column = 'id')
     {
@@ -317,7 +318,7 @@ class Blueprint
      *
      * @param  string  $column
      * @param  bool  $autoIncrement
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function unsignedBigInteger($column, $autoIncrement = false)
     {
@@ -328,7 +329,7 @@ class Blueprint
      * Create a new foreign ID column (unsigned big integer with foreign key support).
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ForeignIdDefinition
+     * @return \Arpon\Database\Schema\Definitions\ForeignIdDefinition
      */
     public function foreignId($column)
     {
@@ -342,7 +343,7 @@ class Blueprint
      *
      * @param  string  $column
      * @param  bool  $autoIncrement
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function unsignedInteger($column, $autoIncrement = false)
     {
@@ -354,7 +355,7 @@ class Blueprint
      *
      * @param  string  $column
      * @param  bool  $autoIncrement
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function bigInteger($column, $autoIncrement = false)
     {
@@ -366,7 +367,7 @@ class Blueprint
      *
      * @param  string  $column
      * @param  bool  $autoIncrement
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function integer($column, $autoIncrement = false)
     {
@@ -378,7 +379,7 @@ class Blueprint
      *
      * @param  string  $column
      * @param  int  $length
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function string($column, $length = 255)
     {
@@ -389,7 +390,7 @@ class Blueprint
      * Create a new text column on the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function text($column)
     {
@@ -400,7 +401,7 @@ class Blueprint
      * Create a new boolean column on the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function boolean($column)
     {
@@ -413,7 +414,7 @@ class Blueprint
      * @param  string  $column
      * @param  int  $precision
      * @param  int  $scale
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function decimal($column, $precision = 8, $scale = 2)
     {
@@ -426,7 +427,7 @@ class Blueprint
      * @param  string  $column
      * @param  int  $total
      * @param  int  $places
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function float($column, $total = 8, $places = 2)
     {
@@ -439,7 +440,7 @@ class Blueprint
      * @param  string  $column
      * @param  int|null  $total
      * @param  int|null  $places
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function double($column, $total = null, $places = null)
     {
@@ -462,7 +463,7 @@ class Blueprint
      * Create a new date column on the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function date($column)
     {
@@ -474,7 +475,7 @@ class Blueprint
      *
      * @param  string  $column
      * @param  int  $precision
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function dateTime($column, $precision = 0)
     {
@@ -486,7 +487,7 @@ class Blueprint
      *
      * @param  string  $column
      * @param  int  $precision
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function time($column, $precision = 0)
     {
@@ -498,7 +499,7 @@ class Blueprint
      *
      * @param  string  $column
      * @param  int  $precision
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function timestamp($column, $precision = 0)
     {
@@ -509,7 +510,7 @@ class Blueprint
      * Create a new json column on the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function json($column)
     {
@@ -520,7 +521,7 @@ class Blueprint
      * Create a new jsonb column on the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function jsonb($column)
     {
@@ -531,7 +532,7 @@ class Blueprint
      * Create a new uuid column on the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function uuid($column)
     {
@@ -543,7 +544,7 @@ class Blueprint
      *
      * @param  string  $column
      * @param  array   $allowed
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function enum($column, array $allowed)
     {
@@ -555,7 +556,7 @@ class Blueprint
      *
      * @param  string  $column
      * @param  array   $allowed
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function set($column, array $allowed)
     {
@@ -566,7 +567,7 @@ class Blueprint
      * Create a new binary column on the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function binary($column)
     {
@@ -577,7 +578,7 @@ class Blueprint
      * Create a new longText column on the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function longText($column)
     {
@@ -588,7 +589,7 @@ class Blueprint
      * Create a new mediumText column on the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function mediumText($column)
     {
@@ -599,7 +600,7 @@ class Blueprint
      * Create a new year column on the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function year($column)
     {
@@ -610,7 +611,7 @@ class Blueprint
      * Create a new geometry column on the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function geometry($column)
     {
@@ -621,7 +622,7 @@ class Blueprint
      * Create a new point column on the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function point($column)
     {
@@ -632,7 +633,7 @@ class Blueprint
      * Add soft deletes to the table.
      *
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function softDeletes($column = 'deleted_at')
     {
@@ -642,7 +643,7 @@ class Blueprint
     /**
      * Create remember token column.
      *
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function rememberToken()
     {
@@ -683,7 +684,7 @@ class Blueprint
      * @param  string  $type
      * @param  string  $name
      * @param  array  $parameters
-     * @return \Arpon\Database\Schema\ColumnDefinition
+     * @return \Arpon\Database\Schema\Definitions\ColumnDefinition
      */
     public function addColumn($type, $name, array $parameters = [])
     {

@@ -1,6 +1,8 @@
 <?php
 
-namespace Arpon\Database\Schema;
+namespace Arpon\Database\Schema\Definitions;
+
+use Arpon\Database\Schema\Blueprint;
 
 class ForeignIdDefinition extends ColumnDefinition
 {
@@ -37,7 +39,7 @@ class ForeignIdDefinition extends ColumnDefinition
      *
      * @param  string|null  $table
      * @param  string  $column
-     * @return \Arpon\Database\Schema\ForeignKeyDefinition
+     * @return \Arpon\Database\Schema\Definitions\ForeignKeyDefinition
      */
     public function constrained($table = null, $column = 'id')
     {

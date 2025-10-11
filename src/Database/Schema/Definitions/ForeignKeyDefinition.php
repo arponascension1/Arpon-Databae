@@ -1,6 +1,6 @@
 <?php
 
-namespace Arpon\Database\Schema;
+namespace Arpon\Database\Schema\Definitions;
 
 use Arpon\Database\Support\Fluent;
 
