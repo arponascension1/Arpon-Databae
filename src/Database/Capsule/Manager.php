@@ -2,170 +2,129 @@
 
 namespace Arpon\Database\Capsule;
 
-use Arpon\Database\ConnectionInterface;
-use Arpon\Database\DatabaseManager;
 use Arpon\Database\Connectors\ConnectionFactory;
-use Arpon\Database\Eloquent\Model;
-use Arpon\Database\Schema\Builder;
+use Arpon\Database\DatabaseManager;
+use Arpon\Database\Eloquent\Model as Eloquent;
+use PDO;
 
 class Manager
 {
+    use CapsuleManagerTrait;
+
     /**
      * The database manager instance.
      *
-     * @var DatabaseManager
+     * @var \Arpon\Database\DatabaseManager
      */
-    protected DatabaseManager $manager;
-
-    /**
-     * The connection factory instance.
-     *
-     * @var ConnectionFactory
-     */
-    protected ConnectionFactory $factory;
-
-    /**
-     * The database connections configuration.
-     *
-     * @var array
-     */
-    protected array $connections = [];
-
-    /**
-     * The default connection name.
-     *
-     * @var string
-     */
-    protected string $default = 'default';
-
-    /**
-     * The global capsule instance.
-     *
-     * @var static
-     */
-    protected static $instance;
+    protected $manager;
 
     /**
      * Create a new database capsule manager.
      *
-     * @return void
+     * @param  \Arpon\Database\Capsule\Container|null  $container
      */
-    public function __construct()
+    public function __construct($container = null)
     {
-        $this->factory = new ConnectionFactory();
+        $this->setupContainer($container ?: new Container);
+
+        // Once we have the container setup, we will setup the default configuration
+        // options in the container "config" binding. This will make the database
+        // manager work correctly out of the box without extreme configuration.
+        $this->setupDefaultConfiguration();
+
         $this->setupManager();
     }
 
     /**
-     * Setup the default database configuration.
+     * Setup the default database configuration options.
      *
      * @return void
      */
-    protected function setupManager(): void
+    protected function setupDefaultConfiguration()
     {
-        $config = [
-            'default' => $this->default,
-            'connections' => $this->connections,
-        ];
-
-        $this->manager = new DatabaseManager($config, $this->factory);
+        $config = $this->container['config'];
+        $config['database.fetch'] = PDO::FETCH_OBJ;
+        $config['database.default'] = 'default';
+        $config['database.connections'] = [];
+        $this->container['config'] = $config;
     }
 
     /**
-     * Add a connection to the manager.
+     * Build the database manager instance.
+     *
+     * @return void
+     */
+    protected function setupManager()
+    {
+        $factory = new ConnectionFactory($this->container);
+
+        $this->manager = new DatabaseManager($this->container, $factory);
+    }
+
+    /**
+     * Get a connection instance from the global manager.
+     *
+     * @param  string|null  $connection
+     * @return \Arpon\Database\Connection
+     */
+    public static function connection($connection = null)
+    {
+        return static::$instance->getConnection($connection);
+    }
+
+    /**
+     * Get a fluent query builder instance.
+     *
+     * @param  \Closure|\Arpon\Database\Query\Builder|string  $table
+     * @param  string|null  $as
+     * @param  string|null  $connection
+     * @return \Arpon\Database\Query\Builder
+     */
+    public static function table($table, $as = null, $connection = null)
+    {
+        return static::$instance->connection($connection)->table($table, $as);
+    }
+
+    /**
+     * Get a schema builder instance.
+     *
+     * @param  string|null  $connection
+     * @return \Arpon\Database\Schema\Builder
+     */
+    public static function schema($connection = null)
+    {
+        return static::$instance->connection($connection)->getSchemaBuilder();
+    }
+
+    /**
+     * Get a registered connection instance.
+     *
+     * @param  string|null  $name
+     * @return \Arpon\Database\Connection
+     */
+    public function getConnection($name = null)
+    {
+        return $this->manager->connection($name);
+    }
+
+    /**
+     * Register a connection with the manager.
      *
      * @param  array  $config
-     * @param string $name
+     * @param  string  $name
      * @return void
      */
-    public function addConnection(array $config, string $name = 'default'): void
+    public function addConnection(array $config, $name = 'default')
     {
-        // Add required default values if not present
-        $config = array_merge([
-            'prefix' => '',
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-        ], $config);
-
-        $this->connections[$name] = $config;
-
-        // If this is the first connection, make it default
-        if (empty($this->default) || $name === 'default') {
-            $this->default = $name;
-        }
-
-        $this->setupManager();
-    }
-
-    /**
-     * Get the database manager instance.
-     *
-     * @return DatabaseManager
-     */
-    public function getDatabaseManager(): DatabaseManager
-    {
-        return $this->manager;
-    }
-
-    /**
-     * Get a connection instance from the manager.
-     *
-     * @param string|null $connection
-     * @return ConnectionInterface
-     */
-    public function connection(string $connection = null): ConnectionInterface
-    {
-        return $this->manager->connection($connection);
-    }
-
-    /**
-     * Get a schema builder instance for the connection.
-     *
-     * @param string|null $connection
-     * @return Builder
-     */
-    public function schema(string $connection = null): Builder
-    {
-        return $this->connection($connection)->getSchemaBuilder();
-    }
-
-    /**
-     * Get a query builder for the given table.
-     *
-     * @param string $table
-     * @param string|null $connection
-     * @return \Arpon\Database\Query\Builder
-     */
-    private function tableInstance(string $table, string $connection = null): \Arpon\Database\Query\Builder
-    {
-        return $this->connection($connection)->table($table);
-    }
-
-    /**
-     * Get a query builder for the given table (static method only).
-     *
-     * @param string $table
-     * @param string|null $connection
-     * @return \Arpon\Database\Query\Builder
-     */
-    public static function table(string $table, string $connection = null): \Arpon\Database\Query\Builder
-    {
-        if (!static::$instance) {
-            throw new \RuntimeException('Capsule not set as global. Call setAsGlobal() first.');
+        $containerConfig = $this->container['config'];
+        
+        if (!isset($containerConfig['database.connections'])) {
+            $containerConfig['database.connections'] = [];
         }
         
-        return static::$instance->tableInstance($table, $connection);
-    }
-
-    /**
-     * Make this capsule instance available globally.
-     *
-     * @return void
-     */
-    public function setAsGlobal(): void
-    {
-        static::$instance = $this;
-        Model::setConnectionResolver($this->manager);
+        $containerConfig['database.connections'][$name] = $config;
+        
+        $this->container['config'] = $containerConfig;
     }
 
     /**
@@ -173,183 +132,73 @@ class Manager
      *
      * @return void
      */
-    public function bootEloquent(): void
+    public function bootEloquent()
     {
-        Model::setConnectionResolver($this->manager);
+        Eloquent::setConnectionResolver($this->manager);
 
-        // If we have connections, set the default
-        if (!empty($this->connections)) {
-            Model::setDefaultConnection($this->default);
+        // If we have an event dispatcher instance, we will go ahead and register it
+        // with the Eloquent ORM, allowing for model callbacks while creating and
+        // updating "model" instances; however, it is not necessary to operate.
+        if ($dispatcher = $this->getEventDispatcher()) {
+            Eloquent::setEventDispatcher($dispatcher);
         }
     }
 
     /**
-     * Set the default connection name.
+     * Set the fetch mode for the database connections.
      *
-     * @param string $name
+     * @param  int  $fetchMode
+     * @return $this
+     */
+    public function setFetchMode($fetchMode)
+    {
+        $this->container['config']['database.fetch'] = $fetchMode;
+
+        return $this;
+    }
+
+    /**
+     * Get the database manager instance.
+     *
+     * @return \Arpon\Database\DatabaseManager
+     */
+    public function getDatabaseManager()
+    {
+        return $this->manager;
+    }
+
+    /**
+     * Get the current event dispatcher instance.
+     *
+     * @return \Arpon\Database\Events\Dispatcher|null
+     */
+    public function getEventDispatcher()
+    {
+        if ($this->container->bound('events')) {
+            return $this->container['events'];
+        }
+    }
+
+    /**
+     * Set the event dispatcher instance to be used by connections.
+     *
+     * @param  \Arpon\Database\Events\Dispatcher  $dispatcher
      * @return void
      */
-    public function setDefaultConnection(string $name): void
+    public function setEventDispatcher($dispatcher)
     {
-        $this->default = $name;
-        $this->setupManager();
-    }
-
-    /**
-     * Get the default connection name.
-     *
-     * @return string
-     */
-    public function getDefaultConnection(): string
-    {
-        return $this->default;
-    }
-
-    /**
-     * Get all of the connections.
-     *
-     * @return array
-     */
-    public function getConnections(): array
-    {
-        return $this->connections;
+        $this->container->instance('events', $dispatcher);
     }
 
     /**
      * Dynamically pass methods to the default connection.
      *
-     * @param string $method
-     * @param array $parameters
+     * @param  string  $method
+     * @param  array  $parameters
      * @return mixed
      */
-    public function __call(string $method, array $parameters)
+    public static function __callStatic($method, $parameters)
     {
-        // Handle table() method specifically to maintain backward compatibility
-        if ($method === 'table') {
-            $table = $parameters[0] ?? null;
-            $connection = $parameters[1] ?? null;
-            return $this->tableInstance($table, $connection);
-        }
-        
-        return $this->connection()->$method(...$parameters);
-    }
-
-    /**
-     * Get the global capsule instance.
-     *
-     * @return static
-     */
-    public static function getInstance()
-    {
-        return static::$instance;
-    }
-
-
-
-    /**
-     * Run a select statement against the database (static version).
-     *
-     * @param string $query
-     * @param array $bindings
-     * @param string|null $connection
-     * @return array
-     */
-    public static function select(string $query, array $bindings = [], string $connection = null): array
-    {
-        if (!static::$instance) {
-            throw new \RuntimeException('Capsule not set as global. Call setAsGlobal() first.');
-        }
-
-        return static::$instance->connection($connection)->select($query, $bindings);
-    }
-
-    /**
-     * Run an insert statement against the database (static version).
-     *
-     * @param string $query
-     * @param array $bindings
-     * @param string|null $connection
-     * @return bool
-     */
-    public static function insert(string $query, array $bindings = [], string $connection = null): bool
-    {
-        if (!static::$instance) {
-            throw new \RuntimeException('Capsule not set as global. Call setAsGlobal() first.');
-        }
-
-        return static::$instance->connection($connection)->insert($query, $bindings);
-    }
-
-    /**
-     * Run an update statement against the database (static version).
-     *
-     * @param string $query
-     * @param array $bindings
-     * @param string|null $connection
-     * @return int
-     */
-    public static function update(string $query, array $bindings = [], string $connection = null): int
-    {
-        if (!static::$instance) {
-            throw new \RuntimeException('Capsule not set as global. Call setAsGlobal() first.');
-        }
-
-        return static::$instance->connection($connection)->update($query, $bindings);
-    }
-
-    /**
-     * Run a delete statement against the database (static version).
-     *
-     * @param string $query
-     * @param array $bindings
-     * @param string|null $connection
-     * @return int
-     */
-    public static function delete(string $query, array $bindings = [], string $connection = null): int
-    {
-        if (!static::$instance) {
-            throw new \RuntimeException('Capsule not set as global. Call setAsGlobal() first.');
-        }
-
-        return static::$instance->connection($connection)->delete($query, $bindings);
-    }
-
-    /**
-     * Execute a statement and return the boolean result (static version).
-     *
-     * @param string $query
-     * @param array $bindings
-     * @param string|null $connection
-     * @return bool
-     */
-    public static function statement(string $query, array $bindings = [], string $connection = null): bool
-    {
-        if (!static::$instance) {
-            throw new \RuntimeException('Capsule not set as global. Call setAsGlobal() first.');
-        }
-
-        return static::$instance->connection($connection)->statement($query, $bindings);
-    }
-
-    /**
-     * Dynamically pass static method calls to the global instance.
-     *
-     * @param string $method
-     * @param array $parameters
-     * @return mixed
-     */
-    public static function __callStatic(string $method, array $parameters)
-    {
-        if (!static::$instance) {
-            throw new \RuntimeException('Capsule not set as global. Call setAsGlobal() first.');
-        }
-
-        // First check if the method exists on the instance
-        if (method_exists(static::$instance, $method)) {
-            return static::$instance->$method(...$parameters);
-        }
-
-        // If not, try to call it via the __call method (which forwards to connection)
-        return static::$instance->__call($method, $parameters);
+        return static::connection()->$method(...$parameters);
     }
 }

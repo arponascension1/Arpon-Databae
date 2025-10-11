@@ -10,7 +10,7 @@ class DatabaseManager implements ConnectionResolverInterface
     /**
      * The application instance.
      *
-     * @var \Arpon\Database\Application|null
+     * @var \Arpon\Database\Capsule\Container|array|null
      */
     protected $app;
 
@@ -45,14 +45,40 @@ class DatabaseManager implements ConnectionResolverInterface
     /**
      * Create a new database manager instance.
      *
-     * @param  array  $config
+     * @param  \Arpon\Database\Capsule\Container|array  $app
      * @param  \Arpon\Database\Connectors\ConnectionFactory  $factory
      * @return void
      */
-    public function __construct(array $config, ConnectionFactory $factory)
+    public function __construct($app, ConnectionFactory $factory)
     {
-        $this->config = $config;
+        $this->app = $app;
         $this->factory = $factory;
+        
+        // For backward compatibility, handle array config
+        if (is_array($app)) {
+            $this->config = $app;
+        }
+    }
+
+    /**
+     * Get configuration from container or array.
+     *
+     * @param  string  $key
+     * @param  mixed  $default
+     * @return mixed
+     */
+    protected function getConfig($key, $default = null)
+    {
+        if (is_array($this->app)) {
+            return $this->config[$key] ?? $default;
+        }
+        
+        if ($this->app && method_exists($this->app, 'offsetExists') && $this->app->offsetExists('config')) {
+            $config = $this->app['config'];
+            return $config[$key] ?? $default;
+        }
+        
+        return $default;
     }
 
     /**
@@ -135,7 +161,7 @@ class DatabaseManager implements ConnectionResolverInterface
         // To get the database connection configuration, we will just pull each of the
         // connection configurations and get the configurations for the given name.
         // If the configuration doesn't exist, we'll throw an exception and bail.
-        $connections = $this->config['connections'] ?? [];
+        $connections = $this->getConfig('database.connections', []);
 
         if (is_null($config = $connections[$name] ?? null)) {
             throw new InvalidArgumentException("Database connection [{$name}] not configured.");
@@ -159,7 +185,7 @@ class DatabaseManager implements ConnectionResolverInterface
         // First we'll set the fetch mode and a few other dependencies of the database
         // connection. This method basically just configures and prepares it to get
         // used by the application. Once we're finished we'll return it back out.
-        if ($this->app && $this->app->bound('events')) {
+        if ($this->app && method_exists($this->app, 'bound') && $this->app->bound('events')) {
             $connection->setEventDispatcher($this->app['events']);
         }
 
@@ -263,7 +289,7 @@ class DatabaseManager implements ConnectionResolverInterface
      */
     public function getDefaultConnection()
     {
-        return $this->config['default'] ?? null;
+        return $this->getConfig('database.default');
     }
 
     /**
@@ -274,7 +300,13 @@ class DatabaseManager implements ConnectionResolverInterface
      */
     public function setDefaultConnection($name)
     {
-        $this->config['default'] = $name;
+        if (is_array($this->app)) {
+            $this->config['default'] = $name;
+        } else {
+            $config = $this->app['config'];
+            $config['database.default'] = $name;
+            $this->app['config'] = $config;
+        }
     }
 
     /**
