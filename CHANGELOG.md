@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2025-10-11
+
+### Improved
+- **Code Organization** - Refined Definition classes structure and improved namespace consistency
+- **Manual Code Refinements** - Enhanced Blueprint, ForeignIdDefinition, and Grammar classes with optimizations
+- **Bug Fixes** - Minor improvements to foreign key handling and method implementations
+
 ## [2.2.3] - 2025-10-11
 
 ### Added
