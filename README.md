@@ -1,6 +1,6 @@
 # Arpon Database - Advanced PHP Database Abstraction Layer
 
-[![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)](https://github.com/arponascension1/Arpon-Database)
+[![Version](https://img.shields.io/badge/version-2.2.1-blue.svg)](https://github.com/arponascension1/Arpon-Database)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PHP](https://img.shields.io/badge/php-%5E7.4%7C%5E8.0-blue.svg)](https://php.net)
 

@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.1] - 2025-10-11
+
+### Fixed
+- **Method Signature Compatibility** - Fixed `unique()` method in Eloquent\Collection to match parent class signature and resolve PHP fatal error
+
 ## [2.2.0] - 2025-10-10
 
 ### Added

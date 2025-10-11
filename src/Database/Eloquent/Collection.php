@@ -195,7 +195,7 @@ class Collection extends BaseCollection
     /**
      * Return only unique items from the collection.
      */
-    public function unique($key = null, bool $strict = false): static
+    public function unique($key = null, $strict = false): static
     {
         if (!is_null($key)) {
             return parent::unique($key, $strict);
